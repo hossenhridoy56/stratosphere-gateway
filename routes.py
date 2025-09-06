@@ -38,169 +38,130 @@ def home():
 
 
 
+# 🔹 Add Student (Manual + Excel)
 @api_routes.route("/student/add", methods=["GET", "POST"], endpoint="add_student")
-def add_student_view():
-    if request.method == "POST" and "name" in request.form:
-        # Manual Entry
-        name = request.form.get("name")
-        roll = request.form.get("roll")
-        session_name = request.form.get("session")
-        if not name or not roll or not session_name:
-            flash("⚠️ Name, Roll, and Session are required!", "danger")
+@login_required
+def add_student():
+    sessions = [f"{2009+i}-{2010+i}" for i in range(100)]
+
+    if request.method == "POST":
+        if "student_file" in request.files:
+            # 🔹 Excel Upload
+            file = request.files.get("student_file")
+            session_name = request.form.get("upload_session")
+            if not file or not session_name:
+                flash("⚠️ Missing file or session", "danger")
+                return redirect(url_for("api.add_student"))
+
+            session_obj = Session.query.filter_by(name=session_name).first()
+            if not session_obj:
+                flash(f"⚠️ Session '{session_name}' not found!", "danger")
+                return redirect(url_for("api.add_student"))
+
+            try:
+                df = pd.read_csv(file) if file.filename.endswith(".csv") else pd.read_excel(file)
+            except Exception as e:
+                flash(f"⚠️ File read error: {str(e)}", "danger")
+                return redirect(url_for("api.add_student"))
+
+            for _, row in df.iterrows():
+                if not row.get("name") or not row.get("roll"):
+                    continue
+                exists = Student.query.filter_by(roll=row.get("roll"), session_id=session_obj.id).first()
+                if exists:
+                    continue
+                student = Student(
+                    name=row.get("name"),
+                    roll=row.get("roll"),
+                    reg=row.get("reg"),
+                    mobile=row.get("mobile"),
+                    email=row.get("email"),
+                    department=row.get("department"),
+                    father_name=row.get("father_name"),
+                    mother_name=row.get("mother_name"),
+                    cgpa=row.get("cgpa"),
+                    pass_year=row.get("pass_year"),
+                    session=session_obj,
+                    testimonial=row.get("testimonial"),
+                    is_active=True
+                )
+                db.session.add(student)
+            db.session.commit()
+            flash("✅ Students uploaded successfully!", "success")
             return redirect(url_for("api.add_student"))
 
-        # ✅ FIX: Get session instance
-        session_obj = Session.query.filter_by(name=session_name).first()
-        if not session_obj:
-            flash(f"⚠️ Session '{session_name}' not found!", "danger")
-            return redirect(url_for("api.add_student"))
+        else:
+            # 🔹 Manual Entry
+            name = request.form.get("name")
+            roll = request.form.get("roll")
+            session_name = request.form.get("session")
+            if not name or not roll or not session_name:
+                flash("⚠️ Name, Roll, and Session are required!", "danger")
+                return redirect(url_for("api.add_student"))
 
-        # ✅ FIX: Use session_id for filtering
-        existing_student = Student.query.filter_by(roll=roll, session_id=session_obj.id).first()
-        if existing_student:
-            flash(f"⚠️ Roll '{roll}' already exists in session '{session_name}'!", "danger")
-            return redirect(url_for("api.add_student"))
+            session_obj = Session.query.filter_by(name=session_name).first()
+            if not session_obj:
+                flash(f"⚠️ Session '{session_name}' not found!", "danger")
+                return redirect(url_for("api.add_student"))
 
-        student = Student(
-            name=name,
-            roll=roll,
-            reg=request.form.get("reg"),
-            mobile=request.form.get("mobile"),
-            email=request.form.get("email"),
-            department=request.form.get("department"),
-            father_name=request.form.get("father_name"),
-            mother_name=request.form.get("mother_name"),
-            cgpa=request.form.get("cgpa"),
-            pass_year=request.form.get("pass_year"),
-            session=session_obj,
-            testimonial=request.form.get("testimonial"),
-            is_active=True
-        )
-        db.session.add(student)
-        db.session.commit()
-        flash("✅ Student added successfully!", "success")
-        return redirect(url_for("api.add_student"))
-
-    # File Upload
-    if request.method == "POST" and "student_file" in request.files:
-        file = request.files.get("student_file")
-        session_name = request.form.get("upload_session", type=str)
-        if not file or not session_name:
-            flash("⚠️ Missing file or session", "danger")
-            return redirect(url_for("api.add_student"))
-
-        # ✅ FIX: Get session instance
-        session_obj = Session.query.filter_by(name=session_name).first()
-        if not session_obj:
-            flash(f"⚠️ Session '{session_name}' not found!", "danger")
-            return redirect(url_for("api.add_student"))
-
-        try:
-            df = pd.read_csv(file) if file.filename.endswith(".csv") else pd.read_excel(file)
-        except Exception as e:
-            flash(f"⚠️ File read error: {str(e)}", "danger")
-            return redirect(url_for("api.add_student"))
-
-        for _, row in df.iterrows():
-            if not row.get("name") or not row.get("roll"):
-                continue
-
-            # ✅ FIX: Use session_id for filtering
-            existing_student = Student.query.filter_by(
-                roll=row.get("roll"),
-                session_id=session_obj.id
-            ).first()
-            if existing_student:
-                continue
+            exists = Student.query.filter_by(roll=roll, session_id=session_obj.id).first()
+            if exists:
+                flash(f"⚠️ Roll '{roll}' already exists!", "danger")
+                return redirect(url_for("api.add_student"))
 
             student = Student(
-                name=row.get("name"),
-                roll=row.get("roll"),
-                reg=row.get("reg"),
-                mobile=row.get("mobile"),
-                email=row.get("email"),
-                department=row.get("department"),
-                father_name=row.get("father_name"),
-                mother_name=row.get("mother_name"),
-                cgpa=row.get("cgpa"),
-                pass_year=row.get("pass_year"),
+                name=name,
+                roll=roll,
+                reg=request.form.get("reg"),
+                mobile=request.form.get("mobile"),
+                email=request.form.get("email"),
+                department=request.form.get("department"),
+                father_name=request.form.get("father_name"),
+                mother_name=request.form.get("mother_name"),
+                cgpa=request.form.get("cgpa"),
+                pass_year=request.form.get("pass_year"),
                 session=session_obj,
-                testimonial=row.get("testimonial"),
+                testimonial=request.form.get("testimonial"),
                 is_active=True
             )
             db.session.add(student)
-        db.session.commit()
-        flash("✅ Students uploaded successfully!", "success")
-        return redirect(url_for("api.add_student"))
+            db.session.commit()
+            flash("✅ Student added successfully!", "success")
+            return redirect(url_for("api.add_student"))
 
-    sessions = [f"{2009+i}-{2010+i}" for i in range(100)]
     return render_template("add_student.html", sessions=sessions)
 
-
+# 🔹 Session Dashboard
 @api_routes.route("/students/session", methods=["GET", "POST"], endpoint="session_dashboard")
-def session_dashboard_view():
+@login_required
+def session_dashboard():
     selected_session = request.form.get("session") if request.method == "POST" else request.args.get("session")
     sessions = [f"{2009+i}-{2010+i}" for i in range(100)]
     students = []
+
     if selected_session:
-        # ✅ FIX: Get session instance
         session_obj = Session.query.filter_by(name=selected_session).first()
         if session_obj:
             students = Student.query.filter_by(session_id=session_obj.id).order_by(Student.roll.asc()).all()
-    return render_template(
-        "student_info.html",
-        sessions=sessions,
-        students=students,
-        selected_session=selected_session
-    )
 
+    return render_template("student_info.html", sessions=sessions, students=students, selected_session=selected_session)
 
-@api_routes.route("/add-student", methods=["POST"], endpoint="add_student_view")
-def add_student_view():
-    row = request.form
-    session_name = row.get("session")
-    session_obj = Session.query.filter_by(name=session_name).first()
-    if not session_obj:
-        flash(f"⚠️ Session '{session_name}' not found.", "danger")
-        return redirect(url_for("testimonial_dashboard"))
-
-    existing_student = Student.query.filter(
-        Student.roll == row.get("roll"),
-        Student.session == session_obj
-    ).first()
-
-    if not existing_student:
-        new_student = Student(
-            name=row.get("name"),
-            roll=row.get("roll"),
-            reg=row.get("reg"),
-            session=session_obj,
-            cgpa=row.get("cgpa"),
-            pass_year=row.get("pass_year"),
-            testimonial=row.get("testimonial"),
-            is_active=True
-        )
-        db.session.add(new_student)
-        db.session.commit()
-        flash(f"✅ Student '{new_student.name}' added successfully.", "success")
-    else:
-        flash(f"⚠️ Student '{existing_student.name}' already exists.", "warning")
-
-    return redirect(url_for("testimonial_dashboard"))
-
-
+# 🔹 Edit Student
 @api_routes.route("/student/edit/<int:id>", methods=["GET", "POST"], endpoint="edit_student")
-def edit_student_view(id):
+@login_required
+def edit_student(id):
+    if current_user.role not in ["admin", "teacher"]:
+        flash("❌ Unauthorized access", "danger")
+        return redirect(url_for("api.session_dashboard"))
+
     student = Student.query.get_or_404(id)
 
     if request.method == "POST":
-        # ✅ Defensive check for roll
         roll = request.form.get("roll")
         if not roll:
             flash("⚠️ Roll is required!", "danger")
             return redirect(request.referrer)
 
-        # ✅ Assign safely
         student.roll = roll.strip()
         student.name = request.form.get("name")
         student.reg = request.form.get("reg")
@@ -224,19 +185,23 @@ def edit_student_view(id):
 
     return render_template("edit_student.html", student=student)
 
-
-
-
+# 🔹 Delete Student
 @api_routes.route("/student/delete/<int:id>", methods=["POST"], endpoint="delete_student")
-def delete_student_view(id):
+@login_required
+def delete_student(id):
+    if current_user.role not in ["admin", "teacher"]:
+        flash("❌ Unauthorized access", "danger")
+        return redirect(url_for("api.session_dashboard"))
+
     student = Student.query.get_or_404(id)
     db.session.delete(student)
     db.session.commit()
     flash("✅ Student deleted successfully!", "success")
     return redirect(url_for("api.session_dashboard"))
 
-
+# 🔹 Export Students
 @api_routes.route("/students/export", methods=["GET", "POST"], endpoint="export_students")
+@login_required
 def export_students():
     session_name = request.form.get("session") if request.method == "POST" else request.args.get("session")
     format = request.form.get("format", "excel") if request.method == "POST" else request.args.get("format", "excel")
@@ -245,44 +210,60 @@ def export_students():
         flash("⚠️ Please select a session to export!", "danger")
         return redirect(url_for("api.session_dashboard"))
 
-    # ✅ FIX: Get session instance
     session_obj = Session.query.filter_by(name=session_name).first()
     if not session_obj:
         flash(f"⚠️ Session '{session_name}' not found!", "danger")
         return redirect(url_for("api.session_dashboard"))
 
     students = Student.query.filter_by(session_id=session_obj.id).order_by(Student.roll.asc()).all()
+    if not students:
+        flash("⚠️ No students found for this session!", "warning")
+        return redirect(url_for("api.session_dashboard"))
 
-    data = []
-    for s in students:
-        data.append({
-            "Roll": s.roll,
-            "Name": s.name,
-            "Mobile": s.mobile or "",
-            "Email": s.email or "",
-            "Father's Name": s.father_name or "",
-            "Mother's Name": s.mother_name or "",
-            "Passing Year": s.pass_year or "",
-            "CGPA": s.cgpa or ""
-        })
+    data = [{
+        "Roll": s.roll,
+        "Name": s.name,
+        "Mobile": s.mobile or "",
+        "Email": s.email or "",
+        "Father's Name": s.father_name or "",
+        "Mother's Name": s.mother_name or "",
+        "Passing Year": s.pass_year or "",
+        "CGPA": s.cgpa or ""
+    } for s in students]
 
     df = pd.DataFrame(data)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
 
     if format.lower() == "pdf":
-        from xhtml2pdf import pisa
-        from io import BytesIO
-        html = df.to_html(index=False)
+        html = f"<meta charset='UTF-8'>{df.to_html(index=False)}"
         pdf = BytesIO()
         pisa.CreatePDF(html, dest=pdf)
         pdf.seek(0)
-        return send_file(pdf, download_name=f"students_{session_name}.pdf", as_attachment=True)
+        return send_file(
+            pdf,
+            download_name=f"students_{session_name}_{timestamp}.pdf",
+            as_attachment=True,
+            mimetype="application/pdf"
+        )
     else:
-        from io import BytesIO
         output = BytesIO()
         with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
             df.to_excel(writer, index=False, sheet_name="Students")
+            workbook = writer.book
+            worksheet = writer.sheets["Students"]
+
+            # Optional formatting
+            format_header = workbook.add_format({'bold': True, 'bg_color': '#DDEEFF'})
+            worksheet.set_row(0, None, format_header)
+            worksheet.set_column(0, len(df.columns)-1, 20)
+
         output.seek(0)
-        return send_file(output, download_name=f"students_{session_name}.xlsx", as_attachment=True)
+        return send_file(
+            output,
+            download_name=f"students_{session_name}_{timestamp}.xlsx",
+            as_attachment=True,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
     
 # ─────────────────────────────────────────────────────────────
 # ✅ Teacher Panel

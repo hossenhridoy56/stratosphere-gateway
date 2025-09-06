@@ -19,6 +19,29 @@
     </div>
   </form>
 
+  <!-- 📤 Export Students -->
+  <form method="GET" action="{{ url_for('api.export_students') }}" class="row justify-content-center mb-4">
+    <div class="col-md-4">
+      <select name="session" class="form-select" required>
+        <option value="">Export Session</option>
+        {% for s in sessions %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select name="format" class="form-select">
+        <option value="excel">Excel</option>
+        <option value="pdf">PDF</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success w-100">
+        <i class="bi bi-download"></i> Export
+      </button>
+    </div>
+  </form>
+
   {% if selected_session %}
     <p class="text-center text-muted mb-4">
       Showing <strong>{{ students|length }}</strong> students for session <strong>{{ selected_session }}</strong>
@@ -45,7 +68,9 @@
           <th>Email</th>
           <th>Mobile</th>
           <th>CGPA</th>
-          <th>Actions</th>
+          {% if current_user.role in ["admin", "teacher"] %}
+            <th>Actions</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -59,6 +84,7 @@
           <td>{{ s.email or '—' }}</td>
           <td>{{ s.mobile or '—' }}</td>
           <td>{{ s.cgpa or '—' }}</td>
+          {% if current_user.role in ["admin", "teacher"] %}
           <td class="d-flex justify-content-center gap-2 flex-wrap">
             <a href="{{ url_for('api.edit_student', roll=s.roll) }}" class="btn btn-sm btn-warning">
               <i class="bi bi-pencil-square"></i> Edit
@@ -69,6 +95,7 @@
               </button>
             </form>
           </td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
