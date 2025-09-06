@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3 text-success text-center">📄 Testimonial Preview</h4>
+
+        <div class="border rounded p-4 bg-light" style="font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.6; max-width: 700px; margin: 0 auto;">
+            <!-- 🔷 Header -->
+            <div class="text-center mb-3">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="IU Logo" style="height: 90px;"><br>
+                <h4 style="margin: 2px 0; font-weight: bold;">ISLAMIC UNIVERSITY, KUSHTIA</h4>
+                <p style="margin: 1px 0;">Department of Statistics</p>
+                <p style="margin: 1px 0;">Shantidanga, Kushtia-7003, Bangladesh</p>
+                <p class="text-muted mt-2"><strong>Date:</strong> {{ date }}</p>
+            </div>
+
+            <!-- 🔍 Testimonial Content -->
+            <div class="text-justify">
+                <p>This is to certify that <b class="fw-bold">{{ student_name }}</b>, son/daughter of <span class="fw-bold">{{ father_name }}</span> and <span class="fw-bold">{{ mother_name }}</span>, has been a bonafide student of the Department of Statistics, Islamic University, Kushtia.</p>
+
+                <p>He/She was admitted to this department in the session <span class="fw-bold">{{ session_name }}</span> and successfully completed the B.Sc. (Honours) degree in Statistics in the year <span class="fw-bold">{{ passing_year }}</span>, securing a CGPA of <span class="fw-bold">{{ cgpa }}</span> on a scale of 4.00.</p>
+
+                <p>During his/her stay at this University, his/her conduct and character were found to be satisfactory. To the best of my knowledge, he/she bears a good moral character and has not been involved in any activity against the interest of the University.</p>
+
+                <p>I wish him/her every success in life.</p>
+            </div>
+
+            <!-- 🔚 Signature -->
+            <div class="text-end mt-5" style="font-size: 11pt;">
+                <p class="mb-0"><strong>Chairman</strong></p>
+                <p class="mb-0">Department of Statistics</p>
+                <div style="border-top: 1px solid #000; width: 180px; margin-left: auto; margin-top: 25px;"></div>
+            </div>
+        </div>
+
+        <!-- 🔘 Action Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('api.generate') }}" class="btn btn-outline-secondary">🔄 Create Another</a>
+            <a href="{{ url_for('api.download_testimonial_pdf_v2', roll=roll) }}" class="btn btn-success">⬇️ Download PDF</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="card p-4 shadow-sm">
+    <h4 class="card-title mb-4 text-primary">
+      Attendance • {{ course.code }} • {{ course.name }}
+      {% if session %} • Session: {{ session }}{% endif %}
+    </h4>
+
+    <!-- ✅ Session Dropdown -->
+    <form method="GET" action="{{ url_for('api.course_attendance', course_id=course.id) }}" class="mb-4">
+      <label class="form-label">🎓 Select Session</label>
+      <select name="session" class="form-select" onchange="this.form.submit()">
+        <option value="" disabled selected>-- Select Session --</option>
+        {% for s in sessions %}
+        <option value="{{ s.name }}" {% if session == s.name %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    {% if students %}
+    <form method="POST" action="{{ url_for('api.course_attendance_save', course_id=course.id) }}">
+      <div class="mb-3">
+        <label class="form-label">📅 Date</label>
+        <input type="date" name="date" class="form-control" required>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Roll</th>
+              <th>Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for st in students %}
+            <tr>
+              <td>{{ st.roll }}</td>
+              <td>{{ st.name }}</td>
+              <td>
+                <select name="status_{{ st.roll }}" class="form-select form-select-sm">
+                  <option value="Present">Present</option>
+                  <option value="Absent">Absent</option>
+                  <option value="Late">Late</option>
+                </select>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success">✅ Save Attendance</button>
+      </div>
+    </form>
+    {% else %}
+    <div class="alert alert-warning">No students found for this session.</div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

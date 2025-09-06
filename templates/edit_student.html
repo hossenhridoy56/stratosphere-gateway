@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .fade-in {
+    animation: fadeInUp 0.6s ease-in-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="container my-5 fade-in">
+  <div class="card shadow-lg rounded-4">
+    <div class="card-body p-5">
+
+      <!-- 🔷 Header -->
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-success">
+          <i class="bi bi-pencil-square me-2"></i> Edit Student Information
+        </h2>
+        <p class="text-muted fst-italic">Update the details below</p>
+        <hr class="w-50 mx-auto mb-4">
+      </div>
+
+      <!-- 📝 Edit Form -->
+      <form method="POST" action="" class="row g-4 needs-validation" novalidate>
+
+        <!-- Roll -->
+        <div class="col-md-6">
+          <label for="roll" class="form-label fw-semibold text-secondary">Roll</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-person-vcard"></i></span>
+            <input type="text" name="roll" id="roll" class="form-control" placeholder="Enter Roll" required value="{{ student.roll or '' }}">
+            <div class="invalid-feedback">Roll is required.</div>
+          </div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="col-md-6">
+          <label for="name" class="form-label fw-semibold text-secondary">Full Name</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-person-fill"></i></span>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Enter Full Name" required value="{{ student.name or '' }}">
+            <div class="invalid-feedback">Name is required.</div>
+          </div>
+        </div>
+
+        <!-- Session Dropdown -->
+        <div class="col-md-6">
+          <label for="session" class="form-label fw-semibold text-secondary">Session</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-calendar-range"></i></span>
+            <select name="session" id="session" class="form-select" required>
+              <option value="">Select Session</option>
+              {% for year in range(2008, 2058) %}
+                {% set option = year ~ '-' ~ (year + 1) %}
+                <option value="{{ option }}" {% if student.session and student.session.name == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Session is required.</div>
+          </div>
+        </div>
+
+        <!-- Department (Fixed: Statistics) -->
+        <div class="col-md-6">
+          <label for="department" class="form-label fw-semibold text-secondary">Department</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-building"></i></span>
+            <input type="text" name="department" id="department" class="form-control" value="Statistics" readonly>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6">
+          <label for="email" class="form-label fw-semibold text-secondary">Email (optional)</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-envelope"></i></span>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email" value="{{ student.email or '' }}">
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="col-md-6">
+          <label for="mobile" class="form-label fw-semibold text-secondary">Mobile</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-telephone"></i></span>
+            <input type="text" name="mobile" id="mobile" class="form-control" placeholder="Enter Mobile Number" value="{{ student.mobile or '' }}">
+          </div>
+        </div>
+
+        <!-- Father's Name -->
+        <div class="col-md-6">
+          <label for="father_name" class="form-label fw-semibold text-secondary">Father's Name</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-person"></i></span>
+            <input type="text" name="father_name" id="father_name" class="form-control" placeholder="Enter Father's Name" value="{{ student.father_name or '' }}">
+          </div>
+        </div>
+
+        <!-- Mother's Name -->
+        <div class="col-md-6">
+          <label for="mother_name" class="form-label fw-semibold text-secondary">Mother's Name</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-person"></i></span>
+            <input type="text" name="mother_name" id="mother_name" class="form-control" placeholder="Enter Mother's Name" value="{{ student.mother_name or '' }}">
+          </div>
+        </div>
+
+        <!-- Passing Year -->
+        <div class="col-md-6">
+          <label for="pass_year" class="form-label fw-semibold text-secondary">Passing Year (optional)</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-calendar"></i></span>
+            <input type="text" name="pass_year" id="pass_year" class="form-control" placeholder="Enter Passing Year" value="{{ student.pass_year or '' }}">
+          </div>
+        </div>
+
+        <!-- CGPA -->
+        <div class="col-md-6">
+          <label for="cgpa" class="form-label fw-semibold text-secondary">CGPA (optional)</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-success text-white"><i class="bi bi-graph-up"></i></span>
+            <input type="text" name="cgpa" id="cgpa" class="form-control" placeholder="Enter CGPA" value="{{ student.cgpa or '' }}">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-12 text-center mt-4">
+          <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow-sm">
+            <i class="bi bi-save2 me-2"></i> Update Student
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- 🧠 Validation Script -->
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+
+{% endblock %}

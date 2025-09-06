@@ -1,0 +1,15 @@
+flask
+jinja2
+sqlalchemy
+reportlab
+flask-login
+flask-mail
+matplotlib
+plotly
+python-dotenv
+wtforms
+flask-wtf
+gunicorn
+weasyprint
+requests
+openpyxl

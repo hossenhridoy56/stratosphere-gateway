@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📡 7-Day Weather Forecast</h2>
+
+    <form method="GET" action="{{ url_for('api.forecast') }}" class="mb-4">
+        <label class="form-label">📍 Select District</label>
+        <select name="location" class="form-select" onchange="this.form.submit()">
+            {% for d in districts %}
+            <option value="{{ d }}" {% if d == selected %}selected{% endif %}>{{ d }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if forecast and forecast.time %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Max Temp (°C)</th>
+                <th>Min Temp (°C)</th>
+                <th>Sunrise</th>
+                <th>Sunset</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(forecast.time|length) %}
+            <tr>
+                <td>{{ forecast.time[i] }}</td>
+                <td>{{ forecast.temperature_2m_max[i] }}</td>
+                <td>{{ forecast.temperature_2m_min[i] }}</td>
+                <td>{{ forecast.sunrise[i] }}</td>
+                <td>{{ forecast.sunset[i] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        ⚠️ Weather data is not currently available for {{ selected }}. Please try again later.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- 🔝 Fixed Header -->
+<div class="d-flex align-items-center justify-content-center gap-3 py-2 mb-4 shadow-sm"
+     style="background: linear-gradient(135deg, #6a11cb, #2575fc); color:white; position:sticky; top:0; z-index:1000;">
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dept Logo"
+       class="header-logo">
+  <div>
+    <h5 class="fw-bold mb-0 header-title">Department of Statistics & Data Science</h5>
+    <p class="mb-0 header-subtitle">Islamic University, Kushtia</p>
+  </div>
+</div>
+
+<!-- 🎯 Hero Section -->
+<div class="text-center hero-section mb-5">
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Stratosphere Logo" class="hero-logo">
+  <h1 class="fw-bold hero-title">📊 Welcome to Stratosphere</h1>
+  <h5 class="hero-subtitle">GenAI-Powered Document Automation for the Department of Statistics & Data Science</h5>
+  <p class="lead hero-lead">📘 “Where data speaks, Stratosphere listens.”<br>
+    One click for attendance, documents, reports—smart, fast, and intuitive.<br>
+    <span>The first step in digital transformation for the Statistics Department.</span>
+  </p>
+</div>
+
+
+<!-- 🎯 Our Mission -->
+<div class="mb-5">
+  <h3 class="text-center text-primary mb-4 fw-bold mission-title">🎯 Our Mission</h3>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 h-100 text-center mission-card bg-success-light">
+        <div class="mb-2 mission-icon">📘</div>
+        <h5 class="fw-bold mb-1">Digital Transformation</h5>
+        <p class="text-muted mission-text">Making the Statistics Department paperless, smart, and automated through Stratosphere.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 h-100 text-center mission-card bg-primary-light">
+        <div class="mb-2 mission-icon">🧠</div>
+        <h5 class="fw-bold mb-1">GenAI-Driven Documentation</h5>
+        <p class="text-muted mission-text">Certificates, applications, testimonials—all generated with one click using AI.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3 h-100 text-center mission-card bg-warning-light">
+        <div class="mb-2 mission-icon">🤝</div>
+        <h5 class="fw-bold mb-1">Built for Everyone</h5>
+        <p class="text-muted mission-text">A friendly platform for teachers, students, and administrators to collaborate easily.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📄 Testimonials -->
+<div class="card shadow-sm p-4 mb-5 testimonial-card">
+  <h3 class="text-center text-primary mb-4 fw-bold">📄 Testimonials</h3>
+
+  <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner text-center">
+
+      <div class="carousel-item active">
+        <div class="p-3">
+          <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
+          <p class="testimonial">"Managing student data has become much easier. A brilliant tool for faculty!"</p>
+          <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+            <img src="{{ url_for('static', filename='images/rahman.jpg') }}" class="rounded-circle testimonial-img">
+            <div>
+              <p class="testimonial-author mb-0">Md. Rahman</p>
+              <small class="text-dark">Faculty Member</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item">
+        <div class="p-3">
+          <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
+          <p class="testimonial">"Stratosphere makes our work faster and more organized. Proud to build it."</p>
+          <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+            <img src="{{ url_for('static', filename='images/hridoy.jpg') }}" class="rounded-circle testimonial-img">
+            <div>
+              <p class="testimonial-author mb-0">HRidoy</p>
+              <small class="text-dark">Vision Architect</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item">
+        <div class="p-3">
+          <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
+          <p class="testimonial">"Data entry, attendance, and document generation—all in one place."</p>
+          <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+            <img src="{{ url_for('static', filename='images/ayesha.jpg') }}" class="rounded-circle testimonial-img">
+            <div>
+              <p class="testimonial-author mb-0">Ayesha</p>
+              <small class="text-dark">Student</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<!-- 👥 Team Introduction -->
+<div class="card shadow-sm p-4 mb-5 team-card">
+  <h4 class="text-center text-primary mb-4 fw-bold">👥 Our Team</h4>
+  <div class="row text-center g-4">
+    <div class="col-md-3 col-6">
+      <div class="p-3 border-start border-3 border-info rounded">
+        <h6 class="fw-bold text-info">Md. Rahman</h6>
+        <p class="small text-muted">Database Design, Attendance Logic</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="p-3 border-start border-3 border-success rounded">
+        <h6 class="fw-bold text-success">HRidoy</h6>
+        <p class="small text-muted">UI/UX, Backend Integration, Vision Architect</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="p-3 border-start border-3 border-warning rounded">
+        <h6 class="fw-bold text-warning">Ayesha</h6>
+        <p class="small text-muted">Content Structuring, Forecast Idea</p>
+      </div>
+    </div>
+  </div>
+  <p class="text-center mt-4 text-muted" style="font-size:0.9rem;">
+    This platform is the result of our collective effort—Stratosphere is not just technology, it's the soul of our department.
+  </p>
+</div>
+
+<!-- 🔧 Custom CSS -->
+<style>
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  padding: 3rem 1rem;
+  border-radius: 15px;
+}
+
+.hero-logo {
+  height: 100px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.hero-lead {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Fixed Header */
+.header-logo {
+  height: 50px;
+  border-radius: 8px;
+}
+.header-title {
+  font-size: 1.1rem;
+}
+.header-subtitle {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+/* Weather card */
+.weather-card {
+  background: linear-gradient(to right, #e0f7fa, #e8f5e9);
+  border-radius: 15px;
+}
+
+/* Mission Section */
+.mission-card {
+  padding: 1.5rem;
+  border-left-width: 6px !important;
+}
+.mission-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.bg-success-light { background: #f1f8e9; border-left:6px solid #4caf50; }
+.bg-primary-light { background: #e3f2fd; border-left:6px solid #2196f3; }
+.bg-warning-light { background: #fff3e0; border-left:6px solid #ff9800; }
+.mission-text { font-size: 0.95rem; }
+
+/* Testimonials */
+.testimonial-card {
+  background: linear-gradient(to right, #d4fc79, #96e6a1);
+  border-radius: 15px;
+}
+.testimonial {
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #333;
+  line-height: 1.5;
+}
+.testimonial-author {
+  font-weight: 600;
+  color: #0d47a1;
+}
+.testimonial-img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+/* Team Section */
+.team-card {
+  background: #f9fbe7;
+  border-radius: 15px;
+}
+
+/* Hover effect */
+.row .col-md-6 .shadow-sm:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { font-size: 1rem; }
+  .hero-logo { height: 80px; }
+  .testimonial-img { width: 45px; height: 45px; }
+  .header-title { font-size: 1rem; }
+  .header-subtitle { font-size: 0.7rem; }
+}
+@media (max-width: 576px) {
+  .hero-title { font-size: 1.3rem; }
+  .hero-subtitle { font-size: 0.95rem; }
+  .hero-lead { font-size: 0.85rem; }
+  .hero-logo { height: 70px; }
+}
+</style>
+
+{% endblock %}

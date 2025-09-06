@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5">
+  <!-- 🔷 Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-success">🏛️ Departmental Testimonial Archive</h2>
+    <p class="text-muted fst-italic">Official certificates issued to graduating students</p>
+    <hr class="w-50 mx-auto">
+  </div>
+
+  <!-- 🔍 Search Bar -->
+  <div class="input-group mb-4 shadow-sm">
+    <span class="input-group-text bg-success text-white"><i class="bi bi-search"></i></span>
+    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, roll, session..." aria-label="Search testimonials">
+  </div>
+
+  <!-- 🧾 Testimonial Cards -->
+  <div class="row row-cols-1 row-cols-md-2 g-4" id="testimonialGrid">
+    {% for s in students %}
+    <div class="col testimonial-card">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title text-primary">{{ s.name }}</h5>
+          <p class="card-text">
+            <strong>Roll:</strong> {{ s.roll }}<br>
+            <strong>Session:</strong> {{ s.session.name }}<br>
+            <strong>CGPA:</strong> {{ s.cgpa or '—' }}<br>
+            <strong>Passing Year:</strong> {{ s.pass_year or '—' }}
+          </p>
+          <div class="d-flex justify-content-between">
+            <!-- ✅ FIXED: Correct endpoint name -->
+            <a href="{{ url_for('api.testimonial_view_page', roll=s.roll) }}" class="btn btn-outline-info btn-sm">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 🔍 Live Search Script -->
+<script>
+  document.getElementById('searchInput').addEventListener('keyup', function () {
+    const filter = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.testimonial-card');
+    cards.forEach(card => {
+      card.style.display = card.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    });
+  });
+</script>
+
+{% endblock %}

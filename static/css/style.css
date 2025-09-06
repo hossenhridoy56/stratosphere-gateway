@@ -1,0 +1,84 @@
+.attendance-header {
+  background-color: #e6ffe6;
+  border-left: 5px solid #28a745;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+}
+nav {
+  background-color: #004080;
+  color: white;
+  padding: 10px 20px;
+}
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+}
+.menu li {
+  position: relative;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+.menu li:hover {
+  background-color: #0059b3;
+}
+.submenu, .nested-submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  color: black;
+  min-width: 180px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+.submenu li, .nested-submenu li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+.menu li:hover > .submenu {
+  display: block;
+}
+.submenu li:hover > .nested-submenu {
+  display: block;
+  left: 100%;
+  top: 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+    margin-bottom: 10px;
+  }
+  .menu {
+    display: none;
+    flex-direction: column;
+    background-color: #004080;
+  }
+  .menu.active {
+    display: flex;
+  }
+  .menu li {
+    border-bottom: 1px solid #0059b3;
+  }
+  .submenu, .nested-submenu {
+    position: static;
+    box-shadow: none;
+    background-color: #e6f0ff;
+  }
+}

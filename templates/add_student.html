@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mb-5">
+  <h4 class="text-center text-primary mb-4">📥 Add New Student</h4>
+
+  <!-- 🔹 File Upload -->
+  <form method="POST" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+    <div class="col-md-6">
+      <label class="form-label">Upload File (Excel / CSV)</label>
+      <input type="file" name="student_file" accept=".xlsx,.csv" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Select Session</label>
+      <select name="upload_session" class="form-select" required>
+        <option value="">Choose session</option>
+        {% for s in sessions %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-success w-100">Upload</button>
+    </div>
+  </form>
+
+  <hr class="my-5">
+
+  <!-- 🔹 Manual Entry -->
+  <h5 class="text-center text-secondary mb-4">Or manually add a student</h5>
+  <form method="POST" class="row g-3 needs-validation" novalidate>
+    <div class="col-md-4"><input type="text" name="roll" class="form-control" placeholder="Student ID" required></div>
+    <div class="col-md-4"><input type="text" name="name" class="form-control" placeholder="Full Name" required></div>
+    <div class="col-md-4">
+      <select name="session" class="form-select" required>
+        <option value="">Select Session</option>
+        {% for s in sessions %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4"><input type="text" name="department" class="form-control" placeholder="Department" required></div>
+    <div class="col-md-4"><input type="email" name="email" class="form-control" placeholder="Email (optional)"></div>
+    <div class="col-md-4"><input type="text" name="mobile" class="form-control" placeholder="Mobile"></div>
+    <div class="col-md-6"><input type="text" name="father_name" class="form-control" placeholder="Father's Name"></div>
+    <div class="col-md-6"><input type="text" name="mother_name" class="form-control" placeholder="Mother's Name"></div>
+    <div class="col-md-6"><input type="text" name="pass_year" class="form-control" placeholder="Passing Year (optional)"></div>
+    <div class="col-md-6"><input type="text" name="cgpa" class="form-control" placeholder="CGPA (optional)"></div>
+    <div class="col-md-12 text-end">
+      <button type="submit" class="btn btn-primary">Add Student</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const forms = document.querySelectorAll('.needs-validation');
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+
+{% endblock %}

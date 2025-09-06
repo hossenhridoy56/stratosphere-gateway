@@ -1,0 +1,30 @@
+<h4 class="mb-3 text-primary">Testimonials for Session: {{ session.name }}</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Registration</th>
+            <th>Download</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.roll }}</td>
+            <td>{{ student.registration }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('api.testimonial_pdf') }}">
+                    <input type="hidden" name="name" value="{{ student.name }}">
+                    <input type="hidden" name="roll" value="{{ student.roll }}">
+                    <input type="hidden" name="registration" value="{{ student.registration }}">
+                    <input type="hidden" name="session" value="{{ session.name }}">
+                    <input type="hidden" name="testimonial" value="{{ student.testimonial }}">
+                    <button type="submit" class="btn btn-sm btn-success">⬇️ PDF</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

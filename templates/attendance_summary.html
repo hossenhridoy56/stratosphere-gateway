@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+  <div class="card p-4 shadow-sm">
+    <h4 class="card-title mb-4 text-primary">
+      📊 Attendance Summary • {{ course.code }} • {{ course.title }}
+    </h4>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Roll</th>
+            <th>Name</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Total</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in summary %}
+          <tr {% if row.total == 0 %}class="table-danger"{% endif %}>
+            <td>{{ row.roll }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.present }}</td>
+            <td>{{ row.absent }}</td>
+            <td>{{ row.total }}</td>
+            <td>
+              {% set percent = (row.present|float / row.total|float * 100) if row.total > 0 else 0 %}
+              {{ percent|round(2) }}%
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-end mt-3">
+      <a href="{{ url_for('api.course_attendance', course_id=course.id) }}" class="btn btn-secondary">
+        🔙 Back to Attendance Entry
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

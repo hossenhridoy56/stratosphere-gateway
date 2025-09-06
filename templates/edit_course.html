@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="text-center text-primary fw-bold mb-4">📝 Edit Course</h4>
+
+  <form method="POST" class="card p-4 shadow-sm mx-auto" style="max-width:600px;">
+    <div class="form-floating mb-3">
+      <input type="text" name="title" class="form-control" id="titleInput" value="{{ course.title }}" required>
+      <label for="titleInput">📘 Course Title</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="text" name="code" class="form-control" id="codeInput" value="{{ course.code }}">
+      <label for="codeInput">🔢 Course Code</label>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 fw-semibold">💾 Update</button>
+  </form>
+</div>
+{% endblock %}

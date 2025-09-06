@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .fade-in {
+    animation: fadeInUp 0.6s ease-in-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #successAlert {
+    transition: opacity 0.5s ease-in-out;
+  }
+</style>
+
+<div class="container my-5 fade-in">
+  <div class="card shadow-lg rounded-4">
+    <div class="card-body p-5">
+
+      <!-- 🔷 Header -->
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">
+          <i class="bi bi-person-plus-fill me-2"></i> Add New Student
+        </h2>
+        <p class="text-muted fst-italic">Fill in the details below</p>
+        <hr class="w-50 mx-auto mb-4">
+      </div>
+
+      <!-- ✅ Success Alert -->
+      {% if success %}
+      <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ success }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      <!-- ❌ Error Alert -->
+      {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      <!-- 📝 Student Form -->
+      <form method="POST" action="/add-student" class="row g-4 needs-validation" novalidate>
+        {% set fields = [
+          ('student_id','Student ID','person-vcard',True),
+          ('name','Full Name','person-fill',True),
+          ('session','Session','calendar-range',True),
+          ('department','Department','building',True),
+          ('email','Email (optional)','envelope',False),
+          ('phone','Phone (optional)','telephone',False),
+          ('father_name','Father\'s Name','person',True),
+          ('mother_name','Mother\'s Name','person',True),
+          ('passing_year','Passing Year (optional)','calendar-check',False),
+          ('cgpa','CGPA (optional)','graph-up',False)
+        ] %}
+        {% for field,label,icon,is_required in fields %}
+        <div class="col-md-6">
+          <label for="{{ field }}" class="form-label fw-semibold text-secondary">{{ label }}</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-primary text-white"><i class="bi bi-{{ icon }}"></i></span>
+            <input type="text" name="{{ field }}" id="{{ field }}" class="form-control" placeholder="Enter {{ label }}" {% if is_required %}required{% endif %}>
+            {% if is_required %}
+            <div class="invalid-feedback">{{ label }} is required.</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        <div class="col-12 text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+            <i class="bi bi-check-circle me-2"></i> Add Student
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- 🧠 Auto-hide Alert + Validation -->
+<script>
+  setTimeout(() => {
+    const alert = document.getElementById("successAlert");
+    if (alert) {
+      alert.classList.remove("show");
+      alert.style.opacity = "0";
+      alert.style.transition = "opacity 0.5s";
+      setTimeout(() => alert.remove(), 500);
+    }
+  }, 5000);
+
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+
+{% endblock %}

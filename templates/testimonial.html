@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ✅ Main Container -->
+<div style="font-family: 'Times New Roman', 'SolaimanLipi', 'Noto Serif Bengali', serif; margin: 50px; line-height: 1.8; color: #000;">
+
+    <!-- ✅ Header Section -->
+    <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="IU Logo" style="height: 80px; margin-bottom: 10px; margin-top: 10px;">
+        <h1 style="font-size: 20px; margin: 5px 0;">ISLAMIC UNIVERSITY, KUSHTIA</h1>
+        <h2 style="font-size: 16px; margin: 0; color: #444;">Department of Statistics</h2>
+        <div style="font-size: 14px; margin-top: 5px; color: #555;">Shantidanga, Kushtia-7003, Bangladesh</div>
+    </div>
+
+    <!-- ✅ Title Section -->
+    <div style="text-align: center; font-size: 18px; text-decoration: underline; margin: 30px 0;">TESTIMONIAL</div>
+
+    <!-- ✅ Body Content -->
+    <div style="text-align: justify; font-size: 14px;">
+        This is to certify that Mr./Ms. <strong>{{ student_name }}</strong>, son/daughter of Mr. <strong>{{ father_name }}</strong> and Mrs. <strong>{{ mother_name }}</strong>, has been a bonafide student of the Department of Statistics, Islamic University, Kushtia.
+
+        He/She was admitted in this department in the session <strong>{{ session }}</strong> and successfully completed the B.Sc. (Honours) degree in Statistics in the year <strong>{{ passing_year }}</strong>, securing a CGPA of <strong>{{ cgpa }}</strong> on a scale of 4.00.
+
+        During his/her stay at this University, his/her conduct and character were found to be satisfactory. To the best of my knowledge, he/she bears a good moral character and has not been involved in any activity against the interest of the University.
+
+        I wish him/her every success in life.
+    </div>
+
+    <!-- ✅ Signature Section -->
+    <div style="margin-top: 60px; text-align: right; font-size: 14px;">
+        Date: {{ date }}<br>
+        Chairman, Department of Statistics
+        <div style="margin-top: 40px; border-top: 1px solid #000; width: 200px; margin-left: auto;"></div>
+    </div>
+
+</div>
+{% endblock %}
