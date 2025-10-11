@@ -5,7 +5,6 @@ from io import BytesIO
 from xhtml2pdf import pisa
 from models import Notice, CalendarUpload, Student, db, Teacher, Course
 from flask_mail import Message
-from app import mail
 
 public_routes = Blueprint("public_routes", __name__)
 
@@ -299,11 +298,11 @@ This code will expire in 5 minutes.
 Regards,
 Academic Gateway"""
             )
-            # ✅ Safe fallback: use mail object directly
-            mail.send(msg)
+            # ✅ Safe fallback: avoid circular import
+            current_app.extensions["mail"].send(msg)
             flash("📩 OTP sent to your email.", "info")
         except Exception as e:
-            print("❌ Email send error:", type(e).__name__, str(e))
+            print("❌ Email send error:", type(e)._name_, str(e))
             flash("⚠️ Failed to send email. Try again or contact admin.", "danger")
 
         return redirect(url_for("public_routes.verify_otp"))
