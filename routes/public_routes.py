@@ -298,10 +298,11 @@ This code will expire in 5 minutes.
 Regards,
 Academic Gateway"""
             )
-            current_app.extensions["mail"].send(msg)
+            # ✅ Safe fallback: use mail object directly
+            mail.send(msg)
             flash("📩 OTP sent to your email.", "info")
         except Exception as e:
-            print("❌ Email send error:", e)
+            print("❌ Email send error:", type(e)._name_, str(e))
             flash("⚠️ Failed to send email. Try again or contact admin.", "danger")
 
         return redirect(url_for("public_routes.verify_otp"))
