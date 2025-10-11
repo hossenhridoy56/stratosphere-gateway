@@ -66,7 +66,7 @@ def forecast_view():
         flash("⚠️ Unable to retrieve weather data. Please check your connection or try again later.", "warning")
 
     return render_template("weather.html", forecast=forecast, selected=selected, districts=list(district_coords.keys()))
-
+####################################################################################################################################
 
 # ✅ Public Notice Viewer
 @public_routes.route("/notice", methods=["GET"])
