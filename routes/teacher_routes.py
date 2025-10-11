@@ -333,3 +333,36 @@ def attendance_selector():
 
     # ✅ Always render template with sessions
     return render_template("teacher/attendance_selector.html", courses=courses, sessions=sessions)
+
+
+
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+@teacher_routes.route("/teacher/request-otp", methods=["POST"])
+def request_otp():
+    try:
+        email = request.form.get("email")
+        if not email:
+            return jsonify({"status": "error", "message": "Email is required"}), 400
+
+        otp = generate_otp()
+        timestamp = datetime.datetime.now()
+
+        # ✅ Save to DB
+        new_otp = OTPRequest(email=email, otp=otp, timestamp=timestamp, verified=False)
+        db.session.add(new_otp)
+        db.session.commit()
+
+        # ✅ Send Email
+        msg = Message("Your OTP", sender="hossenhridoy56@gmail.com", recipients=[email])
+        msg.body = f"Your OTP is: {otp}"
+        mail.send(msg)
+
+        # ✅ Return success response
+        return jsonify({"status": "success", "message": "OTP sent", "otp": otp}), 200
+
+    except Exception as e:
+        print("🔴 OTP Error:", e)
+        return jsonify({"status": "error", "message": "Internal Server Error"}), 500
