@@ -337,32 +337,42 @@ def attendance_selector():
 
 
 
-def generate_otp():
-    return str(random.randint(100000, 999999))
+# ✅ Verify OTP & Set Password
+@public_routes.route("/teacher/verify-otp", methods=["GET", "POST"])
+def verify_otp():
+    if request.method == "POST":
+        entered_otp = request.form.get("otp")
+        password = request.form.get("password")
+        confirm = request.form.get("confirm")
 
-@teacher_routes.route("/teacher/request-otp", methods=["POST"])
-def request_otp():
-    try:
-        email = request.form.get("email")
-        if not email:
-            return jsonify({"status": "error", "message": "Email is required"}), 400
+        if password != confirm:
+            flash("❌ Passwords do not match.", "danger")
+            return redirect(url_for("public_routes.verify_otp"))
 
-        otp = generate_otp()
-        timestamp = datetime.datetime.now()
+        if time.time() > session.get("otp_expiry", 0):
+            session.pop("otp_code", None)
+            session.pop("otp_expiry", None)
+            flash("⏰ OTP expired. Please request a new one.", "warning")
+            return redirect(url_for("public_routes.request_otp"))
 
-        # ✅ Save to DB
-        new_otp = OTPRequest(email=email, otp=otp, timestamp=timestamp, verified=False)
-        db.session.add(new_otp)
+        if entered_otp != session.get("otp_code"):
+            flash("❌ Invalid OTP.", "danger")
+            return redirect(url_for("public_routes.verify_otp"))
+
+        email = session.get("otp_email")
+        teacher = Teacher.query.filter_by(email=email).first()
+        if not teacher:
+            flash("❌ Teacher not found.", "danger")
+            return redirect(url_for("public_routes.request_otp"))
+
+        teacher.set_password(password)
         db.session.commit()
 
-        # ✅ Send Email
-        msg = Message("Your OTP", sender="hossenhridoy56@gmail.com", recipients=[email])
-        msg.body = f"Your OTP is: {otp}"
-        mail.send(msg)
+        session.pop("otp_email", None)
+        session.pop("otp_code", None)
+        session.pop("otp_expiry", None)
 
-        # ✅ Return success response
-        return jsonify({"status": "success", "message": "OTP sent", "otp": otp}), 200
+        flash("✅ Password set successfully. You can now login.", "success")
+        return redirect(url_for("public_routes.teacher_login"))
 
-    except Exception as e:
-        print("🔴 OTP Error:", e)
-        return jsonify({"status": "error", "message": "Internal Server Error"}), 500
+    return render_template("public/verify_otp.html")
