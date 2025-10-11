@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="text-center text-warning mb-4">✏️ Edit Teacher</h4>
+
+  <!-- 🔹 Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- 🔹 Edit Form -->
+  <form method="POST" action="{{ url_for('admin_routes.edit_teacher', id=teacher.id) }}" class="needs-validation" novalidate>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="name" class="form-control" value="{{ teacher.name }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ teacher.email }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Mobile</label>
+        <input type="text" name="mobile" class="form-control" value="{{ teacher.mobile or '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Department</label>
+        <input type="text" name="department" class="form-control" value="{{ teacher.department or '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Designation</label>
+        <input type="text" name="designation" class="form-control" value="{{ teacher.designation or '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Joining Date</label>
+        <input type="date" name="joining_date" class="form-control" value="{{ teacher.joining_date.strftime('%Y-%m-%d') if teacher.joining_date else '' }}">
+      </div>
+    </div>
+
+    <div class="text-end mt-4">
+      <button type="submit" class="btn btn-warning">✅ Update Teacher</button>
+    </div>
+  </form>
+</div>
+
+<!-- 🔹 Bootstrap Validation Script -->
+<script>
+(() => {
+  'use strict';
+  const forms = document.querySelectorAll('.needs-validation');
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+{% endblock %}

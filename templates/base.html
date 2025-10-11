@@ -30,6 +30,20 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+    .dropdown-submenu {
+      position: relative;
+    }
+    .dropdown-submenu .submenu {
+      top: 0;
+      left: 100%;
+      margin-left: 0.1rem;
+      position: absolute;
+      display: none;
+      border-radius: 8px;
+    }
+    .dropdown-submenu:hover .submenu {
+      display: block;
+    }
     footer {
       margin-top: 60px;
       padding: 20px 0;
@@ -49,55 +63,99 @@
 <body>
 
 <!-- ✅ Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('api.home') }}">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="max-height: 40px; border-radius: 6px; box-shadow: 0 0 6px rgba(0,0,0,0.2); margin-right: 10px;">
-      <span class="fw-bold fs-5">Stratosphere</span>
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('public_routes.home') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}"
+           alt="Logo"
+           style="max-height: 40px; border-radius: 6px; box-shadow: 0 0 6px rgba(0,0,0,0.2); margin-right: 10px;">
+      <span class="fs-5">Stratosphere</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-        <!-- 👨‍🎓 Students -->
+        <!-- ✅ Public Routes -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.forecast_view') }}">🌤️ Forecast</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.notice_view') }}">📢 Notices</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.calendar_list') }}">📅 Calendar</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.generate') }}">📄 Documents</a></li>
+
+        <!-- ✅ Teacher Panel Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">👨‍🎓 Students</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('api.add_student') }}">➕ Add Student</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('api.session_dashboard') }}">📋 Student Info</a></li>
+          <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button" data-bs-toggle="dropdown">
+            👩‍🏫 Teacher Panel
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="teacherDropdown">
+            {% if not session.get("teacher_id") %}
+              <li><a class="dropdown-item" href="{{ url_for('public_routes.teacher_login') }}">🔐 Login</a></li>
+            {% else %}
+              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.upload_material') }}">📤 Upload Materials</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.view_materials', course_id=1) }}">📁 Course Materials</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.my_courses') }}">📘 My Courses</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.attendance_selector') }}">🕒 Attendance</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('auth_routes.logout') }}">🚪 Logout</a></li>
+            {% endif %}
           </ul>
         </li>
 
-        <!-- 👨‍🏫 Teachers (Polished) -->
+        <!-- ✅ Student Panel Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">👨‍🏫 Teachers</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('api.teacher_panel') }}">➕ Add & View Teachers</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('api.upload_material') }}">📤 Upload Materials</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('api.view_materials', course_id=1) }}">📁 Course Materials</a></li>
+          <a class="nav-link dropdown-toggle" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown">
+            👨‍🎓 Student Panel
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="studentDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('public_routes.student_list') }}">📋 Student List</a></li>
           </ul>
         </li>
 
-        <!-- 📄 Documents -->
+        <!-- ✅ Admin Panel Dropdown with Submenus -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">📄 Documents</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('api.testimonial_dashboard') }}">🏛️ Testimonial</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('api.generate') }}">📝 Application</a></li>
+          <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+            🛠️ Admin Panel
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+            {% if not session.get("role") == "admin" %}
+              <li><a class="dropdown-item" href="{{ url_for('auth_routes.admin_login') }}">🔐 Login</a></li>
+            {% else %}
+              <li><a class="dropdown-item" href="{{ url_for('admin_routes.notice_upload') }}">📢 Add Notice</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('admin_routes.upload_calendar') }}">📅 Upload Calendar</a></li>
+
+              <!-- 👨‍🎓 Student Submenu -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">👨‍🎓 Student</a>
+                <ul class="dropdown-menu submenu">
+                  <li><a class="dropdown-item" href="{{ url_for('admin_routes.add_student') }}">➕ Add Student</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('admin_routes.student_list') }}">📋 Manage Students</a></li>
+                </ul>
+              </li>
+
+              <!-- 👩‍🏫 Teacher Submenu -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">👩‍🏫 Teacher</a>
+                <ul class="dropdown-menu submenu">
+                  <li><a class="dropdown-item" href="{{ url_for('admin_routes.add_teacher') }}">➕ Add Teacher</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('admin_routes.teacher_panel') }}">📋 Manage Teachers</a></li>
+                </ul>
+              </li>
+
+              <li><a class="dropdown-item" href="{{ url_for('admin_routes.testimonial_archive') }}">🏛️ Testimonial</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('admin_routes.admin_dashboard') }}">📊 Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('auth_routes.logout') }}">🚪 Logout</a></li>
+            {% endif %}
           </ul>
         </li>
 
-        <!-- 🌦️ Forecast -->
+        <!-- ✅ Dark Mode Toggle -->
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('api.forecast') }}">🌦️ Forecast</a>
+          <button class="btn btn-sm btn-outline-light ms-2 mt-1" onclick="toggleDarkMode()">🌓 Mode</button>
         </li>
       </ul>
-
-      <!-- ✅ Dark Mode Toggle -->
-      <button class="btn btn-sm btn-light ms-3" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
     </div>
   </div>
 </nav>
@@ -116,7 +174,7 @@
   {% endwith %}
 </div>
 
-<!-- ✅ Main Content -->
+<!-- ✅ Page Content -->
 <div class="container mt-4">
   {% block content %}{% endblock %}
 </div>
@@ -127,24 +185,28 @@
 </footer>
 
 <!-- ✅ Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Dark Mode
+  // 🌗 Toggle Dark Mode
   function toggleDarkMode() {
     document.body.classList.toggle("dark-mode");
     localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
   }
+
+  // 🌗 Restore Dark Mode if previously enabled
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark-mode");
   }
 
-  // Set Year in Footer
+  // 📅 Set current year in footer
   document.getElementById("year").innerText = new Date().getFullYear();
 
-  // Auto-hide flash messages after 3 seconds
+  // 🔔 Auto-dismiss flash messages after 3 seconds
   setTimeout(() => {
     document.querySelectorAll('.alert').forEach(alert => alert.remove());
   }, 3000);
 </script>
+
+<!-- ✅ Bootstrap JS bundle for dropdowns, collapse, modal -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

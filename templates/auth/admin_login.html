@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Admin Login | Stratosphere{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+  <h4 class="text-center text-primary mb-4">🔐 Admin Login</h4>
+  <form method="POST" class="p-4 border rounded bg-light w-50 mx-auto">
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" name="username" id="username" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" name="password" id="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}👨‍🎓 Student Dashboard | Stratosphere{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h4 class="text-center text-primary mb-4">👨‍🎓 Welcome, {{ student.name }}</h4>
+
+  <div class="row g-4">
+    <!-- 📅 Attendance -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-info">
+        <div class="card-body text-center">
+          <h5 class="card-title">📅 Attendance</h5>
+          <p class="card-text">View your attendance record by course.</p>
+          <a href="{{ url_for('api.my_attendance') }}" class="btn btn-outline-info">View Attendance</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📁 Materials -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-success">
+        <div class="card-body text-center">
+          <h5 class="card-title">📁 Materials</h5>
+          <p class="card-text">Access course materials uploaded by teachers.</p>
+          <a href="{{ url_for('api.view_materials', course_id=1) }}" class="btn btn-outline-success">View Materials</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📜 Testimonial -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-warning">
+        <div class="card-body text-center">
+          <h5 class="card-title">📜 Testimonial</h5>
+          <p class="card-text">Request or view your testimonial.</p>
+          <a href="{{ url_for('api.testimonial_dashboard') }}" class="btn btn-outline-warning">Request Testimonial</a>
+          <a href="{{ url_for('api.testimonial_view_page', roll=student.roll) }}" class="btn btn-outline-secondary mt-2">View My Testimonial</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Academic Calendar{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">📅 Calendar for Session {{ session }}</h4>
+
+  {% if calendar %}
+    <div class="card shadow-sm p-3">
+      <a href="{{ url_for('static', filename='uploads/calendars/' ~ calendar.filename) }}"
+         target="_blank" class="btn btn-outline-primary">
+        View Calendar
+      </a>
+      <a href="{{ url_for('static', filename='uploads/calendars/' ~ calendar.filename) }}"
+         download class="btn btn-outline-success ms-2">
+        Download
+      </a>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">No calendar found for this session.</div>
+  {% endif %}
+</div>
+{% endblock %}

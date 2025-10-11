@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .signature {
+            text-align: right;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ logo_path }}" alt="IU Logo" style="height: 90px;"><br>
+        <h4 style="margin: 2px 0;"><strong>ISLAMIC UNIVERSITY, KUSHTIA</strong></h4>
+        <p style="margin: 1px 0;">Department of Statistics</p>
+        <p style="margin: 1px 0;">Shantidanga, Kushtia-7003, Bangladesh</p>
+        <p style="margin-top: 4px;"><strong>Date:</strong> {{ date }}</p>
+    </div>
+
+    <p>This is to certify that <b>{{ student_name }}</b>, son/daughter of {{ father_name }} and {{ mother_name }}, has been a bonafide student of the Department of Statistics, Islamic University, Kushtia.</p>
+
+    <p>He/She was admitted to this department in the session {{ session_name }} and successfully completed the B.Sc. (Honours) degree in Statistics in the year {{ passing_year }}, securing a CGPA of {{ cgpa }} on a scale of 4.00.</p>
+
+    <p>During his/her stay at this University, his/her conduct and character were found to be satisfactory. To the best of my knowledge, he/she bears a good moral character and has not been involved in any activity against the interest of the University.</p>
+
+    <p>I wish him/her every success in life.</p>
+
+    <div class="signature">
+        <p><strong>Chairman</strong><br>Department of Statistics</p>
+        <div style="border-top: 1px solid #000; width: 180px; margin-top: 25px;"></div>
+    </div>
+</body>
+</html>

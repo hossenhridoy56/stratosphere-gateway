@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">🕒 Start Attendance</h4>
+  <form method="POST" action="">
+    <div class="mb-3">
+      <label class="form-label">📚 Select Course</label>
+      <select name="course_id" class="form-select" required>
+        <option value="">-- Select a course --</option>
+        {% for course in courses %}
+        <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">➡️ Go to Attendance Panel</button>
+  </form>
+</div>
+{% endblock %}

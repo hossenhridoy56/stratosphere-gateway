@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5">
+  <h3 class="text-center text-primary fw-bold mb-4">👨‍🎓 Student Information</h3>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered text-center align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Roll</th>
+          <th>Name</th>
+          <th>Session</th>
+          <th>Department</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>CGPA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ s.roll }}</td>
+          <td>{{ s.name }}</td>
+          <td>{{ s.session or '—' }}</td>
+          <td>{{ s.department or '—' }}</td>
+          <td>{{ s.email or '—' }}</td>
+          <td>{{ s.mobile or '—' }}</td>
+          <td>{{ s.cgpa or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

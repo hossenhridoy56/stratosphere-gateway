@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Active Notices{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-4 text-center">📢 Active Notices</h4>
+
+  {% if notices %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for notice in notices %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title text-primary">{{ notice.title }}</h5>
+
+              {% if notice.content %}
+                <p class="card-text">{{ notice.content }}</p>
+              {% endif %}
+
+              {% if notice.file_name %}
+                <div class="mt-3 d-flex align-items-center gap-2">
+                  {% if notice.file_type == 'pdf' %}
+                    <i class="bi bi-file-earmark-pdf text-danger fs-5"></i>
+                  {% elif notice.file_type in ['jpg', 'jpeg', 'png'] %}
+                    <i class="bi bi-image text-info fs-5"></i>
+                  {% elif notice.file_type in ['doc', 'docx'] %}
+                    <i class="bi bi-file-earmark-word text-primary fs-5"></i>
+                  {% else %}
+                    <i class="bi bi-file-earmark fs-5"></i>
+                  {% endif %}
+
+                  <a href="{{ url_for('static', filename='uploads/notices/' ~ notice.file_name) }}"
+                     target="_blank" class="btn btn-outline-primary btn-sm">
+                    View
+                  </a>
+                  <a href="{{ url_for('static', filename='uploads/notices/' ~ notice.file_name) }}"
+                     download class="btn btn-outline-success btn-sm">
+                    Download
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+            <div class="card-footer text-muted small d-flex justify-content-between">
+              <span>Priority: {{ notice.priority }}</span>
+              {% if notice.expires_at %}
+                <span>Expires: {{ notice.expires_at.strftime('%Y-%m-%d') }}</span>
+              {% else %}
+                <span>Expires: ∞</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No active notices available.</div>
+  {% endif %}
+</div>
+{% endblock %}

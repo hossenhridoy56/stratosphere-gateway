@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h4 class="text-center text-primary mb-4">📩 Request One-Time Password (OTP)</h4>
+  <form method="POST" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label class="form-label">Registered Email</label>
+      <input type="email" name="email" class="form-control" placeholder="teacher@university.edu" required>
+    </div>
+    <div class="text-end">
+      <button type="submit" class="btn btn-primary">📩 Send OTP</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

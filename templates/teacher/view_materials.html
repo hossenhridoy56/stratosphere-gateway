@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">📁 Materials for <strong>{{ course.name }}</strong></h5>
+      <form method="GET" class="d-flex align-items-center">
+        <label for="session" class="me-2 mb-0">📅 Select Session:</label>
+        <select name="session" id="session" class="form-select me-2" onchange="this.form.submit()">
+          {% for s in session_list %}
+            <option value="{{ s }}" {% if s == selected_session %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-light">🔍 Filter</button>
+      </form>
+    </div>
+
+    <div class="card-body">
+      {% if materials %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>📌 Title</th>
+                <th>📄 File</th>
+                <th>⏰ Uploaded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in materials %}
+              <tr>
+                <td>{{ m.title }}</td>
+                <td>
+                  <a href="{{ url_for('static', filename='uploads/' ~ m.filename) }}" target="_blank">
+                    {{ m.filename }}
+                  </a>
+                </td>
+                <td>{{ m.upload_time.strftime('%d-%b-%Y %I:%M %p') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-warning text-center">
+          ❌ No materials uploaded yet for <strong>{{ selected_session }}</strong>.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

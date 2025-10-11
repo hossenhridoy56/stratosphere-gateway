@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h4 class="text-center text-success">➕ Add New Teacher</h4>
+
+    <form method="POST" action="{{ url_for('admin_routes.add_teacher') }}" class="mt-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Mobile</label>
+                <input type="text" name="mobile" class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Department</label>
+                <select name="department" class="form-select" required>
+                    <option value="" disabled selected>Select department</option>
+                    <option value="Statistics">Statistics</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <!-- Add more as needed -->
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Designation</label>
+                <select name="designation" class="form-select">
+                    <option value="" disabled selected>Select designation</option>
+                    <option value="Lecturer">Lecturer</option>
+                    <option value="Assistant Professor">Assistant Professor</option>
+                    <option value="Associate Professor">Associate Professor</option>
+                    <option value="Professor">Professor</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Joining Date</label>
+                <input type="date" name="joining_date" class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">🔐 Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-success">✅ Add Teacher</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

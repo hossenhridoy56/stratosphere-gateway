@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4">
+  <h4 class="text-primary">📚 My Courses (Session-wise)</h4>
+
+  <form method="GET" class="mb-3">
+    <select name="session" onchange="this.form.submit()" class="form-select">
+      {% for s in session_list %}
+        <option value="{{ s }}" {% if s == selected_session %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Course Title</th>
+        <th>Code</th>
+        <th>Materials</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in courses %}
+      <tr>
+        <td>{{ course.name }}</td>
+        <td>{{ course.code }}</td>
+        <td>
+          <a href="{{ url_for('teacher_routes.view_materials', course_id=course.id) }}" class="btn btn-sm btn-outline-secondary">📁 View</a>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not courses %}
+      <tr><td colspan="3" class="text-center text-muted">No courses assigned for this session.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('teacher_routes.course_add_form', teacher_id=teacher_id) }}" class="btn btn-outline-primary">➕ Add Course</a>
+</div>
+{% endblock %}

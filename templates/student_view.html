@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+  <h4 class="text-center text-primary mb-4">👤 Attendance Record for {{ student.name }}</h4>
+
+  <div class="mb-4 text-center">
+    <h5 class="fw-bold">📊 Overall Attendance: 
+      <span class="{% if percentage >= 75 %}text-success{% elif percentage >= 50 %}text-warning{% else %}text-danger{% endif %}">
+        {{ percentage }}%
+      </span>
+    </h5>
+  </div>
+
+  {% if records %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ r.date.strftime('%d %B %Y') }}</td>
+          <td>
+            <span class="fw-bold {% if r.status == 'Present' %}text-success{% else %}text-danger{% endif %}">
+              {{ r.status }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-warning text-center">
+    No attendance records found.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

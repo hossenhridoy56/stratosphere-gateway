@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Upload Academic Calendar{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">📅 Upload Academic Calendar</h4>
+  <form method="POST" enctype="multipart/form-data" class="p-4 border rounded shadow-sm bg-light">
+    <div class="mb-3">
+      <label class="form-label">Select Session</label>
+      <select name="session" class="form-select" required>
+        <option value="" disabled selected>Choose session</option>
+        {% for s in sessions %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Attach Calendar File (PDF/Image)</label>
+      <input type="file" name="calendar_file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+{% endblock %}

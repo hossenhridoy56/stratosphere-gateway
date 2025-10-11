@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Academic Calendars{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">Academic Calendars</h4>
+
+  <form method="POST" class="mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-auto">
+        <label for="session" class="form-label fw-semibold">Select Session</label>
+        <select name="session" id="session" class="form-select">
+          <option value="">-- All Sessions --</option>
+          {% for s in sessions %}
+            <option value="{{ s }}" {% if selected_session == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </div>
+  </form>
+
+  {% if calendars %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for cal in calendars %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title">Session: {{ cal.session }}</h5>
+              <a href="{{ url_for('static', filename='uploads/calendars/' ~ cal.filename) }}"
+                 target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+              <a href="{{ url_for('static', filename='uploads/calendars/' ~ cal.filename) }}"
+                 download class="btn btn-outline-success btn-sm ms-2">Download</a>
+            </div>
+            <div class="card-footer text-muted small">
+              Uploaded on: {{ cal.uploaded_at.strftime('%Y-%m-%d') }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center mt-4">
+      No calendars found.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

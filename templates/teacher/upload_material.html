@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <h4 class="text-primary mb-4">📤 Upload Materials</h4>
+
+  <form method="GET" class="mb-3">
+    <select name="session" onchange="this.form.submit()" class="form-select">
+      {% for s in session_list %}
+        <option value="{{ s }}" {% if s == selected_session %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label class="form-label">Course</label>
+      <select name="course_id" class="form-select" required>
+        {% for course in courses %}
+          <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Material Title</label>
+      <input type="text" name="title" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Upload File</label>
+      <input type="file" name="file" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">📤 Upload</button>
+  </form>
+</div>
+{% endblock %}

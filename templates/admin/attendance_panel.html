@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Attendance Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h4 class="mb-3">Attendance Panel: {{ course.name }}</h4>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="date" class="form-label">Select Date</label>
+      <input type="date" name="date" id="date" class="form-control" value="{{ today }}" required>
+    </div>
+
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Roll</th>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>{{ student.roll }}</td>
+          <td>{{ student.name }}</td>
+          <td>
+            <select name="status_{{ student.id }}" class="form-select" required>
+              <option value="{{ student.id }}:Present">Present</option>
+              <option value="{{ student.id }}:Absent">Absent</option>
+              <option value="{{ student.id }}:Late">Late</option>
+            </select>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="mb-3">
+      <label for="materials" class="form-label">Upload Class Materials</label>
+      <input type="file" name="materials[]" multiple class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit Attendance</button>
+  </form>
+</div>
+{% endblock %}

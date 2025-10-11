@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">📘 Attendance — {{ course.name }} ({{ course.code }})</h4>
+  <p>📅 Session: <strong>{{ session_name }}</strong></p>
+
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label">📅 Attendance Date</label>
+      <input type="date" name="date" class="form-control" required>
+    </div>
+
+    <table class="table table-bordered table-striped">
+      <thead class="table-light">
+        <tr>
+          <th>👨‍🎓 Student Name</th>
+          <th>📌 Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>{{ student.name }}</td>
+          <td>
+            <select name="status_{{ student.id }}" class="form-select" required>
+              <option value="">-- Select --</option>
+              <option value="Present">✅ Present</option>
+              <option value="Absent">❌ Absent</option>
+              <option value="Late">⏰ Late</option>
+              <option value="Excused">📝 Excused</option>
+            </select>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">✅ Submit Attendance</button>
+  </form>
+</div>
+{% endblock %}

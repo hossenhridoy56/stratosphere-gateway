@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Manage Students | Stratosphere{% endblock %}
+{% block content %}
+
+<div class="container my-5">
+  <h4 class="text-center text-primary mb-4">👨‍🎓 Manage Students</h4>
+
+  <!-- 🔔 Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- 📤 File Upload Section -->
+  <div class="card mb-5">
+    <div class="card-header bg-light fw-semibold">📤 Upload Students via File</div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('api_routes.upload_students') }}" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+        <div class="col-md-6">
+          <label for="student_file" class="form-label">Upload File (CSV/Excel)</label>
+          <input type="file" name="student_file" id="student_file" accept=".csv,.xlsx" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+          <label for="upload_session" class="form-label">Select Session</label>
+          <select name="upload_session" id="upload_session" class="form-select" required>
+            <option value="">Choose session</option>
+            {% for s in sessions %}
+              <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-success w-100">📤 Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✍️ Manual Add Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-light fw-semibold">✍️ Manually Add a Student</div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('api_routes.add_student') }}" class="row g-3 needs-validation" novalidate>
+        <div class="col-md-4"><input type="text" name="roll" class="form-control" placeholder="Student ID" required></div>
+        <div class="col-md-4"><input type="text" name="name" class="form-control" placeholder="Full Name" required></div>
+        <div class="col-md-4">
+          <select name="session" class="form-select" required>
+            <option value="">Select Session</option>
+            {% for s in sessions %}
+              <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4"><input type="text" name="department" class="form-control" placeholder="Department" required></div>
+        <div class="col-md-4"><input type="email" name="email" class="form-control" placeholder="Email (optional)"></div>
+        <div class="col-md-4"><input type="text" name="mobile" class="form-control" placeholder="Mobile"></div>
+        <div class="col-md-6"><input type="text" name="father_name" class="form-control" placeholder="Father's Name"></div>
+        <div class="col-md-6"><input type="text" name="mother_name" class="form-control" placeholder="Mother's Name"></div>
+        <div class="col-md-6"><input type="text" name="pass_year" class="form-control" placeholder="Passing Year (optional)"></div>
+        <div class="col-md-6"><input type="text" name="cgpa" class="form-control" placeholder="CGPA (optional)"></div>
+        <div class="col-md-12 text-end"><button type="submit" class="btn btn-primary">➕ Add Student</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🔗 Link to Student List -->
+  <div class="text-end">
+    <a href="{{ url_for('api_routes.student_list') }}" class="btn btn-outline-secondary">📋 View All Students</a>
+  </div>
+</div>
+
+<!-- ✅ Form Validation Script -->
+<script>
+(() => {
+  'use strict';
+  const forms = document.querySelectorAll('.needs-validation');
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+
+{% endblock %}

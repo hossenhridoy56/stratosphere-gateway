@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+    <h4 class="text-center text-primary">👨‍🏫 Teacher Panel</h4>
+
+    {% if teacher %}
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-success">{{ teacher.name }}</h5>
+            <p class="card-text">
+                <strong>Email:</strong> {{ teacher.email }}<br>
+                <strong>Mobile:</strong> {{ teacher.mobile or '—' }}<br>
+                <strong>Department:</strong> {{ teacher.department }}<br>
+                <strong>Designation:</strong> {{ teacher.designation or '—' }}<br>
+                <strong>Joining Date:</strong> {{ teacher.joining_date.strftime('%d %b %Y') if teacher.joining_date else '—' }}
+            </p>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4 text-center">
+        ⚠️ No teacher data available.
+    </div>
+    {% endif %}
+
+    {% if teachers %}
+    <div class="table-responsive mt-5">
+        <h5 class="text-secondary">📋 All Teachers</h5>
+        <table class="table table-bordered table-hover mt-3">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Joining Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teachers %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ t.name }}</td>
+                    <td>{{ t.email }}</td>
+                    <td>{{ t.mobile or '—' }}</td>
+                    <td>{{ t.department }}</td>
+                    <td>{{ t.designation or '—' }}</td>
+                    <td>{{ t.joining_date.strftime('%d %b %Y') if t.joining_date else '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

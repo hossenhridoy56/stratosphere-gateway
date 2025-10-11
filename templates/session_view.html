@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}📊 Attendance Overview | Stratosphere{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h4 class="text-center text-primary mb-4">📊 Session-wise Attendance Overview</h4>
+
+  <!-- 🔍 Filter Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <div class="col-md-5">
+      <label class="form-label">Select Session</label>
+      <select name="session_id" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Select Session --</option>
+        {% for s in sessions %}
+          <option value="{{ s.id }}" {% if s.id == selected_session_id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-5">
+      <label class="form-label">Select Course</label>
+      <select name="course_id" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Select Course --</option>
+        {% for c in courses %}
+          <option value="{{ c.id }}" {% if c.id == selected_course_id %}selected{% endif %}>{{ c.title }} ({{ c.code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-outline-primary w-100">🔍 Filter</button>
+    </div>
+  </form>
+
+  {% if attendance_data %}
+  <!-- 📄 Export Button -->
+  <div class="text-end mb-3">
+    <a href="{{ url_for('api.export_attendance', course_id=selected_course_id) }}" class="btn btn-outline-secondary">
+      📄 Export Summary
+    </a>
+  </div>
+
+  <!-- 📋 Attendance Table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">📋 Attendance Summary</h5>
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Student Name</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name, status, date in attendance_data %}
+          <tr>
+            <td>{{ name }}</td>
+            <td>
+              <span class="fw-bold {% if status == 'Present' %}text-success{% elif status == 'Absent' %}text-danger{% else %}text-warning{% endif %}">
+                {{ status }}
+              </span>
+            </td>
+            <td>{{ date.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+    <div class="alert alert-info text-center">No attendance data found for selected course.</div>
+  {% endif %}
+</div>
+{% endblock %}

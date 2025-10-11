@@ -1,11 +1,11 @@
 {% extends "base.html" %}
+{% block title %}Stratosphere | Department of Statistics{% endblock %}
 {% block content %}
 
 <!-- 🔝 Fixed Header -->
 <div class="d-flex align-items-center justify-content-center gap-3 py-2 mb-4 shadow-sm"
      style="background: linear-gradient(135deg, #6a11cb, #2575fc); color:white; position:sticky; top:0; z-index:1000;">
-  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dept Logo"
-       class="header-logo">
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dept Logo" class="header-logo">
   <div>
     <h5 class="fw-bold mb-0 header-title">Department of Statistics & Data Science</h5>
     <p class="mb-0 header-subtitle">Islamic University, Kushtia</p>
@@ -22,7 +22,6 @@
     <span>The first step in digital transformation for the Statistics Department.</span>
   </p>
 </div>
-
 
 <!-- 🎯 Our Mission -->
 <div class="mb-5">
@@ -52,57 +51,54 @@
   </div>
 </div>
 
+<!-- ⚙️ Key Features -->
+<div class="mb-5">
+  <h3 class="text-center text-primary mb-4 fw-bold">⚙️ Key Features</h3>
+  <div class="row g-4">
+    {% set features = [
+      {"icon": "📝", "title": "Attendance", "desc": "Smart digital attendance for teachers, easy to track & manage."},
+      {"icon": "📄", "title": "AI-Documents", "desc": "One-click generation of certificates, applications & testimonials."},
+      {"icon": "📚", "title": "Course Materials", "desc": "Upload, share, and download notes & research papers instantly."},
+      {"icon": "🌦️", "title": "Weather & Forecast", "desc": "Stay updated with real-time weather and forecasts for campus life."}
+    ] %}
+    {% for f in features %}
+    <div class="col-md-3 col-6">
+      <div class="card shadow-sm h-100 text-center p-3 feature-card bg-light">
+        <div class="mb-2 fs-2">{{ f.icon }}</div>
+        <h6 class="fw-bold mb-1">{{ f.title }}</h6>
+        <p class="small text-muted">{{ f.desc }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 <!-- 📄 Testimonials -->
 <div class="card shadow-sm p-4 mb-5 testimonial-card">
   <h3 class="text-center text-primary mb-4 fw-bold">📄 Testimonials</h3>
-
   <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner text-center">
-
-      <div class="carousel-item active">
+      {% set testimonials = [
+        {"name": "Md. Rahman", "role": "Faculty Member", "image": "rahman.jpg", "quote": "Managing student data has become much easier. A brilliant tool for faculty!"},
+        {"name": "HRidoy", "role": "Vision Architect", "image": "hridoy.jpg", "quote": "Stratosphere makes our work faster and more organized. Proud to build it."},
+        {"name": "Ayesha", "role": "Student", "image": "ayesha.jpg", "quote": "Data entry, attendance, and document generation—all in one place."}
+      ] %}
+      {% for person in testimonials %}
+      <div class="carousel-item {% if loop.first %}active{% endif %}">
         <div class="p-3">
           <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
-          <p class="testimonial">"Managing student data has become much easier. A brilliant tool for faculty!"</p>
+          <p class="testimonial">{{ person.quote }}</p>
           <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-            <img src="{{ url_for('static', filename='images/rahman.jpg') }}" class="rounded-circle testimonial-img">
+            <img src="{{ url_for('static', filename='images/' ~ person.image) }}" class="rounded-circle testimonial-img">
             <div>
-              <p class="testimonial-author mb-0">Md. Rahman</p>
-              <small class="text-dark">Faculty Member</small>
+              <p class="testimonial-author mb-0">{{ person.name }}</p>
+              <small class="text-dark">{{ person.role }}</small>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="carousel-item">
-        <div class="p-3">
-          <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
-          <p class="testimonial">"Stratosphere makes our work faster and more organized. Proud to build it."</p>
-          <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-            <img src="{{ url_for('static', filename='images/hridoy.jpg') }}" class="rounded-circle testimonial-img">
-            <div>
-              <p class="testimonial-author mb-0">HRidoy</p>
-              <small class="text-dark">Vision Architect</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <div class="p-3">
-          <i class="fas fa-quote-left fa-2x text-primary mb-2"></i>
-          <p class="testimonial">"Data entry, attendance, and document generation—all in one place."</p>
-          <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-            <img src="{{ url_for('static', filename='images/ayesha.jpg') }}" class="rounded-circle testimonial-img">
-            <div>
-              <p class="testimonial-author mb-0">Ayesha</p>
-              <small class="text-dark">Student</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {% endfor %}
     </div>
-
     <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>
@@ -116,24 +112,19 @@
 <div class="card shadow-sm p-4 mb-5 team-card">
   <h4 class="text-center text-primary mb-4 fw-bold">👥 Our Team</h4>
   <div class="row text-center g-4">
+    {% set team = [
+      {"name": "Md. Rahman", "role": "Database Design, Attendance Logic", "color": "info"},
+      {"name": "HRidoy", "role": "UI/UX, Backend Integration, Vision Architect", "color": "success"},
+      {"name": "Ayesha", "role": "Content Structuring, Bengali Accessibility", "color": "warning"}
+    ] %}
+    {% for member in team %}
     <div class="col-md-3 col-6">
-      <div class="p-3 border-start border-3 border-info rounded">
-        <h6 class="fw-bold text-info">Md. Rahman</h6>
-        <p class="small text-muted">Database Design, Attendance Logic</p>
+      <div class="p-3 border-start border-3 border-{{ member.color }} rounded">
+        <h6 class="fw-bold text-{{ member.color }}">{{ member.name }}</h6>
+        <p class="small text-muted">{{ member.role }}</p>
       </div>
     </div>
-    <div class="col-md-3 col-6">
-      <div class="p-3 border-start border-3 border-success rounded">
-        <h6 class="fw-bold text-success">HRidoy</h6>
-        <p class="small text-muted">UI/UX, Backend Integration, Vision Architect</p>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="p-3 border-start border-3 border-warning rounded">
-        <h6 class="fw-bold text-warning">Ayesha</h6>
-        <p class="small text-muted">Content Structuring, Forecast Idea</p>
-      </div>
-    </div>
+    {% endfor %}
   </div>
   <p class="text-center mt-4 text-muted" style="font-size:0.9rem;">
     This platform is the result of our collective effort—Stratosphere is not just technology, it's the soul of our department.
@@ -187,12 +178,6 @@
   font-weight: 400;
 }
 
-/* Weather card */
-.weather-card {
-  background: linear-gradient(to right, #e0f7fa, #e8f5e9);
-  border-radius: 15px;
-}
-
 /* Mission Section */
 .mission-card {
   padding: 1.5rem;
@@ -206,6 +191,16 @@
 .bg-primary-light { background: #e3f2fd; border-left:6px solid #2196f3; }
 .bg-warning-light { background: #fff3e0; border-left:6px solid #ff9800; }
 .mission-text { font-size: 0.95rem; }
+
+/* Features */
+.feature-card {
+  transition: 0.3s ease;
+  border-radius: 12px;
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
 
 /* Testimonials */
 .testimonial-card {
@@ -233,12 +228,6 @@
 .team-card {
   background: #f9fbe7;
   border-radius: 15px;
-}
-
-/* Hover effect */
-.row .col-md-6 .shadow-sm:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 /* Responsive adjustments */

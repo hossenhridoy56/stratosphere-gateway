@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Upload Notice{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3">📢 Upload Notice File</h4>
+  <form method="POST" enctype="multipart/form-data" class="p-4 border rounded shadow-sm bg-light">
+    <div class="mb-3">
+      <label class="form-label">Notice Title</label>
+      <input type="text" name="title" class="form-control" placeholder="Enter title" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Attach File (PDF/Image/Doc)</label>
+      <input type="file" name="notice_file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Expiry Date (optional)</label>
+      <input type="date" name="expires_at" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+{% endblock %}

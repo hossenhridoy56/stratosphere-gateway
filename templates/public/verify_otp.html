@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h4 class="text-center text-success mb-4">🔐 Verify OTP & Set Password</h4>
+  <form method="POST" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label class="form-label">Enter OTP</label>
+      <input type="text" name="otp" class="form-control" placeholder="6-digit code" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">New Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Create a strong password" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" name="confirm" class="form-control" placeholder="Repeat password" required>
+    </div>
+    <div class="text-end">
+      <button type="submit" class="btn btn-success">✅ Set Password</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

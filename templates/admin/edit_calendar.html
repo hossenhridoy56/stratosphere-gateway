@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}📅 Edit Calendar - {{ entry.session }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">📅 Edit Calendar for Session: <strong>{{ entry.session }}</strong></h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="calendar_file" class="form-label">Upload New Calendar File</label>
+            <input type="file" class="form-control" id="calendar_file" name="calendar_file" required>
+            <div class="form-text">Allowed formats: PDF, DOCX, JPG, PNG</div>
+        </div>
+
+        <div class="mb-3">
+            <p>📄 Current File: <a href="{{ url_for('static', filename='uploads/calendar/' ~ entry.filename) }}" target="_blank">{{ entry.filename }}</a></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">🔄 Update Calendar</button>
+        <a href="{{ url_for('admin_calendar_routes.calendar_manager') }}" class="btn btn-secondary ms-2">⬅️ Back to Manager</a>
+    </form>
+</div>
+{% endblock %}

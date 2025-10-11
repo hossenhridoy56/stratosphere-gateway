@@ -1,0 +1,13 @@
+<form method="POST" enctype="multipart/form-data">
+  <label>Session:</label>
+  <select name="session" class="form-control">
+    {% for s in sessions %}
+      <option value="{{ s }}" {% if s == calendar.session %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Replace File (optional):</label>
+  <input type="file" name="calendar_file" class="form-control">
+
+  <button type="submit" class="btn btn-primary mt-2">Update Calendar</button>
+</form>

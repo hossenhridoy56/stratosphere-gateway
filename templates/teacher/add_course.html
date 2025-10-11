@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <h4 class="text-primary mb-4">➕ Add New Course</h4>
+
+  <form method="POST" action="{{ url_for('teacher_routes.course_add', teacher_id=teacher_id) }}">
+    <div class="mb-3">
+      <label class="form-label">Course Title</label>
+      <input type="text" name="title" class="form-control" placeholder="e.g. Statistics II" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Course Code</label>
+      <input type="text" name="code" class="form-control" placeholder="e.g. STAT202" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Session</label>
+      <select name="session" class="form-select" required>
+        {% for s in session_list %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">✅ Add Course</button>
+  </form>
+</div>
+{% endblock %}

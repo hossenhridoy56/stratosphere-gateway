@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Academic Calendar | Stratosphere{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4 text-primary">Academic Calendar</h3>
+
+  <div class="card border-info shadow-sm">
+    <div class="card-body">
+      <p class="text-muted">This page displays semester schedules, exam dates, holidays, and other academic events.</p>
+
+      <table class="table table-bordered table-hover bg-white">
+        <thead class="table-light">
+          <tr>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Semester Start</td>
+            <td>January 1</td>
+            <td>New classes begin</td>
+          </tr>
+          <tr>
+            <td>Midterm Exams</td>
+            <td>March 15</td>
+            <td>Half-yearly assessment</td>
+          </tr>
+          <tr>
+            <td>Final Exams</td>
+            <td>May 20</td>
+            <td>End-of-semester evaluation</td>
+          </tr>
+          <tr>
+            <td>Summer Break</td>
+            <td>June 1 – June 30</td>
+            <td>Academic recess</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mt-4 text-end">
+        <a href="#" class="btn btn-outline-secondary disabled">Export PDF (Coming Soon)</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

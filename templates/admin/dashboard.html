@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h4>🛠️ Admin Dashboard</h4>
+
+  <!-- 📢 Notice Summary -->
+  <h5 class="mt-4">📋 Active Notices</h5>
+  {% if notices %}
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Title</th>
+          <th>Priority</th>
+          <th>Expires</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for notice in notices %}
+        <tr>
+          <td>{{ notice.title }}</td>
+          <td>{{ notice.priority }}</td>
+          <td>{{ notice.expires_at.strftime('%Y-%m-%d') if notice.expires_at else '∞' }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_routes.delete_notice', notice_id=notice.id) }}" onsubmit="return confirm('Delete this notice?')">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">No notices found.</div>
+  {% endif %}
+
+  <!-- 📅 Calendar Summary -->
+  <h5 class="mt-5">📅 Uploaded Calendars</h5>
+  {% if calendars %}
+    <ul class="list-group">
+      {% for cal in calendars %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <div>
+      <strong>{{ cal.session }}</strong><br>
+      <small class="text-muted">Uploaded: {{ cal.uploaded_at.strftime('%Y-%m-%d') }}</small>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+      <a href="{{ url_for('static', filename='uploads/calendars/' ~ cal.filename) }}" target="_blank" class="btn btn-outline-primary">View</a>
+      <form method="POST" action="{{ url_for('admin_routes.delete_calendar', calendar_id=cal.id) }}" onsubmit="return confirm('Delete this calendar?')" style="display:inline;">
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+    </div>
+  </li>
+{% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No calendars uploaded yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

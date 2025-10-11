@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">📡 7-Day Weather Forecast</h2>
+
+  <form method="GET" action="{{ url_for('public_routes.forecast_view') }}" class="mb-4">
+    <label class="form-label fw-semibold">📍 Select District</label>
+    <select name="location" class="form-select shadow-sm" onchange="this.form.submit()">
+      <option value="" disabled {% if not selected %}selected{% endif %}>-- Choose District --</option>
+      {% for d in districts %}
+        <option value="{{ d }}" {% if d == selected %}selected{% elif not selected and d == 'Kushtia' %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if forecast and forecast.time %}
+    <!-- Forecast Table -->
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>Date</th>
+            <th>🌡️ Max Temp (°C)</th>
+            <th>❄️ Min Temp (°C)</th>
+            <th>🌅 Sunrise</th>
+            <th>🌇 Sunset</th>
+            <th>🌤️</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in range(forecast.time|length) %}
+          <tr>
+            <td>{{ forecast.time[i] }}</td>
+            <td class="text-danger fw-bold">{{ forecast.temperature_2m_max[i] }}</td>
+            <td class="text-primary fw-bold">{{ forecast.temperature_2m_min[i] }}</td>
+            <td>{{ forecast.sunrise[i] }}</td>
+            <td>{{ forecast.sunset[i] }}</td>
+            <td>
+              {% set temp = forecast.temperature_2m_max[i] %}
+              {% if temp > 35 %}☀️
+              {% elif temp > 28 %}🌤️
+              {% elif temp > 22 %}⛅
+              {% else %}🌧️
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Chart Block -->
+    <canvas id="forecastChart" height="120"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('forecastChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: {{ forecast.time | tojson }},
+          datasets: [
+            {
+              label: 'Max Temp',
+              data: {{ forecast.temperature_2m_max | tojson }},
+              borderColor: 'red',
+              backgroundColor: 'rgba(255,0,0,0.1)',
+              fill: true
+            },
+            {
+              label: 'Min Temp',
+              data: {{ forecast.temperature_2m_min | tojson }},
+              borderColor: 'blue',
+              backgroundColor: 'rgba(0,0,255,0.1)',
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Temperature Trend' }
+          }
+        }
+      });
+    </script>
+
+    <!-- Statistical Summary -->
+    <div class="mt-4">
+      <h5>📈 Statistical Summary</h5>
+      <ul class="list-group">
+        <li class="list-group-item">
+          Average Max Temp: {{ (forecast.temperature_2m_max | sum / forecast.temperature_2m_max | length) | round(1) }} °C
+        </li>
+        <li class="list-group-item">
+          Average Min Temp: {{ (forecast.temperature_2m_min | sum / forecast.temperature_2m_min | length) | round(1) }} °C
+        </li>
+        <li class="list-group-item">
+          Max Temp Range: {{ forecast.temperature_2m_max | max }} °C to {{ forecast.temperature_2m_max | min }} °C
+        </li>
+        <li class="list-group-item">
+          Min Temp Range: {{ forecast.temperature_2m_min | max }} °C to {{ forecast.temperature_2m_min | min }} °C
+        </li>
+        <li class="list-group-item">
+          Total Days Above 30°C: {{ forecast.temperature_2m_max | select('>', 30) | list | length }}
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

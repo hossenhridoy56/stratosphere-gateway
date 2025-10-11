@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-4 text-success text-center">✅ Document Preview</h4>
+
+        <div class="border rounded p-4 bg-light" style="font-family: 'Times New Roman', serif;">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 80px;"><br>
+                <h5 class="mb-0 mt-2">ISLAMIC UNIVERSITY, KUSHTIA</h5>
+                <p class="mb-0">Department of Statistics</p>
+                <p class="mb-0">Shantidanga, Kushtia-7003, Bangladesh</p>
+                <p><strong>Date:</strong> {{ now.strftime('%d %B, %Y') }}</p>
+            </div>
+
+            {% if request_type == "leave" %}
+            <p><strong>To:</strong><br>{{ recipient }}<br>Department of Statistics<br>Islamic University, Kushtia</p>
+            <p><strong>Subject:</strong> {{ subject }}</p>
+            <p>Dear Sir/Madam,</p>
+            <p>
+                I am writing to formally request a leave of absence from my duties as <strong>{{ role }}</strong> 
+                for the period from <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>. 
+                The reason for this leave is personal.
+            </p>
+            <p>
+                I assure you that I will complete any pending responsibilities before my departure and resume my duties 
+                promptly upon return. I kindly request you to consider my application and grant me the leave for the mentioned duration.
+            </p>
+
+            {% elif request_type == "certificate" %}
+            <p><strong>To:</strong><br>{{ recipient }}<br>Islamic University, Kushtia</p>
+            <p><strong>Subject:</strong> {{ subject }}</p>
+            <p>Dear Sir/Madam,</p>
+            <p>
+                I am writing to respectfully request an official certificate confirming my academic credentials and enrollment 
+                at the Department of Statistics, Islamic University, Kushtia. This certificate is required for official purposes.
+            </p>
+            <p>
+                I would be grateful if you could kindly issue the certificate at your earliest convenience. 
+                Please let me know if any additional information or documentation is required.
+            </p>
+
+            {% elif request_type == "recommendation" %}
+            <p><strong>To:</strong><br>{{ recipient }}<br>Department of Statistics<br>Islamic University, Kushtia</p>
+            <p><strong>Subject:</strong> {{ subject }}</p>
+            <p>Dear Sir/Madam,</p>
+            <p>
+                I hope this message finds you well. I am writing to request a recommendation letter to support my application 
+                for academic or professional purposes.
+            </p>
+            <p>
+                As a student of your department, I have always strived to maintain a high standard of performance and integrity. 
+                Your endorsement would be invaluable in highlighting my qualifications and character.
+            </p>
+            <p>
+                I would be honored if you could provide this letter at your convenience. 
+                Please let me know if you require any specific details or documents.
+            </p>
+            <p>Thank you for your time and support.</p>
+
+            {% endif %}
+
+            <div class="mt-4">
+                <p>Sincerely,<br>
+                <strong>{{ name }}</strong><br>
+                Roll: {{ roll }}<br>
+                Registration: {{ registration }}<br>
+                Session: {{ session }}<br>
+                <br>(Signature)</p>
+            </div>
+        </div>
+
+        <div class="text-end mt-4 d-flex justify-content-between">
+            <a href="{{ url_for('api.generate') }}" class="btn btn-outline-secondary">🔄 Create Another</a>
+
+            <form method="POST" action="{{ url_for('api.generate_document_pdf') }}">
+                <input type="hidden" name="name" value="{{ name }}">
+                <input type="hidden" name="role" value="{{ role }}">
+                <input type="hidden" name="roll" value="{{ roll }}">
+                <input type="hidden" name="registration" value="{{ registration }}">
+                <input type="hidden" name="session" value="{{ session }}">
+                <input type="hidden" name="recipient" value="{{ recipient }}">
+                <input type="hidden" name="subject" value="{{ subject }}">
+                <input type="hidden" name="request_type" value="{{ request_type }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <button type="submit" class="btn btn-success">⬇️ Download PDF</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
