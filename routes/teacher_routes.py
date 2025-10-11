@@ -338,7 +338,7 @@ def attendance_selector():
 
 
 # ✅ Verify OTP & Set Password
-@public_routes.route("/teacher/verify-otp", methods=["GET", "POST"])
+@teacher_routes.route("/teacher/verify-otp", methods=["GET", "POST"])
 def verify_otp():
     if request.method == "POST":
         entered_otp = request.form.get("otp")
