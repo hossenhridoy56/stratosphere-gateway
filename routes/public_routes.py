@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 import requests, random, time
 from io import BytesIO
 from xhtml2pdf import pisa
-from flask_mail import Message
 from models import Notice, CalendarUpload, Student, db, Teacher, Course
 from flask_mail import Message
 

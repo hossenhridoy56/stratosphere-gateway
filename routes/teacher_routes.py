@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from models import Teacher, Course, CourseMaterial, db, Attendance, Student, Session
 from sqlalchemy.orm import joinedload
 from datetime import datetime
+from flask_mail import Message
 
 import os
 from werkzeug.utils import secure_filename
@@ -336,6 +337,46 @@ def attendance_selector():
 
 
 
+
+# ✅ Request OTP
+@teacher_routes.route("/teacher/request-otp", methods=["GET", "POST"])
+def request_otp():
+    if request.method == "POST":
+        email = request.form.get("email")
+        teacher = Teacher.query.filter_by(email=email).first()
+
+        if not teacher:
+            flash("❌ Email not found. Contact admin.", "danger")
+            return redirect(url_for("public_routes.request_otp"))
+
+        otp = str(random.randint(100000, 999999))
+        session["otp_email"] = email
+        session["otp_code"] = otp
+        session["otp_expiry"] = time.time() + 300
+
+        try:
+            msg = Message(
+                subject="🔐 Your OTP for Teacher Registration",
+                sender=current_app.config["MAIL_USERNAME"],
+                recipients=[email],
+                body=f"""Dear {teacher.name},
+
+Your OTP is: {otp}
+
+This code will expire in 5 minutes.
+
+Regards,
+Academic Gateway"""
+            )
+            current_app.extensions["mail"].send(msg)
+            flash("📩 OTP sent to your email.", "info")
+        except Exception as e:
+            print("❌ Email send error:", e)
+            flash("⚠️ Failed to send email. Try again or contact admin.", "danger")
+
+        return redirect(url_for("public_routes.verify_otp"))
+
+    return render_template("public/request_otp.html")
 
 # ✅ Verify OTP & Set Password
 @teacher_routes.route("/teacher/verify-otp", methods=["GET", "POST"])
