@@ -1,13 +1,21 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app, send_file
-from models import Teacher, Course, CourseMaterial, db, Attendance, Student, Session
+from flask import (
+    Blueprint, render_template, request, redirect,
+    url_for, flash, session, current_app, make_response, Response
+)
+from flask_login import current_user
+from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
 from datetime import datetime
-from flask_mail import Message
-
+from io import StringIO
 import os
-from werkzeug.utils import secure_filename
-teacher_routes = Blueprint("teacher_routes", __name__)
-teacher_routes = Blueprint("teacher_routes", __name__, url_prefix="/teacher")
+import csv
+
+from models import (
+    db, Teacher, Course, CourseMaterial,
+    Attendance, Student, Session
+)
+
+teacher_routes = Blueprint("teacher_routes", __name__ , url_prefix="/teacher")
 
 # 🔧 Utility: Generate stitched session list
 def generate_sessions(start_year=2009, count=100):
@@ -231,189 +239,112 @@ def material_upload(course_id):
 
 
 
+# 🔹 Attendance Selector
+@teacher_routes.route("/teacher/attendance/select", methods=["GET", "POST"])
+def attendance_select():
+    courses = Course.query.filter_by(teacher_id=current_user.id).all()
+    return render_template("teacher/attendance_selector.html", courses=courses)
 
-
-
-
-
-
-#############################################################
-@teacher_routes.route("/attendance-dashboard")
-def attendance_dashboard():
-    teacher_id = session.get("teacher_id")
-    if not teacher_id:
-        flash("🔐 Please login first", "danger")
-        return redirect(url_for("public_routes.teacher_login"))
-
-    courses = Course.query.filter_by(teacher_id=teacher_id).all()
-    return render_template("teacher/attendance_dashboard.html", courses=courses)
-
-@teacher_routes.route("/attendance-summary/<int:course_id>")
-def attendance_summary(course_id):
-    course = Course.query.get_or_404(course_id)
-    records = Attendance.query.filter_by(course_id=course_id).order_by(Attendance.date.desc()).all()
-    return render_template("teacher/attendance_summary.html", course=course, records=records)
-
-@teacher_routes.route("/attendance-export/<int:course_id>")
-def attendance_export(course_id):
-    course = Course.query.get_or_404(course_id)
-    records = Attendance.query.filter_by(course_id=course_id).all()
-
-    output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(["Student Roll", "Name", "Date", "Status"])
-    for r in records:
-        student = Student.query.get(r.student_id)
-        writer.writerow([student.roll, student.name, r.date, r.status])
-
-    response = make_response(output.getvalue())
-    response.headers["Content-Disposition"] = f"attachment; filename=attendance_{course.code}.csv"
-    response.headers["Content-type"] = "text/csv"
-    return response
-
-@teacher_routes.route("/attendance-delete/<int:course_id>", methods=["POST"])
-def attendance_delete(course_id):
-    course = Course.query.get_or_404(course_id)
-    Attendance.query.filter_by(course_id=course_id).delete()
-    db.session.commit()
-    flash("🗑️ Attendance records deleted", "warning")
-    return redirect(url_for("teacher_routes.attendance_dashboard"))
-
-
-@teacher_routes.route("/attendance/<int:course_id>", methods=["GET", "POST"])
+# 🔹 Attendance Panel
+@teacher_routes.route("/teacher/attendance/panel/<int:course_id>", methods=["GET", "POST"])
 def attendance_panel(course_id):
     course = Course.query.get_or_404(course_id)
-    session_name = course.session  # ✅ stitched from course.session string
-
-    # ✅ stitched student filter: enrolled in course AND matching session
-    students = [
-        student for student in course.students
-        if student.session == session_name
-    ]
+    students = course.students
 
     if request.method == "POST":
-        date = request.form.get("date")
-        for student in students:
-            status = request.form.get(f"status_{student.id}")
-            if status:
-                existing = Attendance.query.filter_by(
-                    student_id=student.id,
-                    course_id=course.id,
-                    date=date
-                ).first()
-                if not existing:
-                    entry = Attendance(
-                        student_id=student.id,
-                        course_id=course.id,
-                        date=date,
-                        status=status,
-                        session=session_name  # ✅ stitched session save
-                    )
-                    db.session.add(entry)
-        db.session.commit()
-        flash("✅ Attendance saved successfully", "success")
-        return redirect(url_for('teacher_routes.attendance_panel', course_id=course.id))
+        date_str = request.form.get("date")
+        if not date_str:
+            flash("❌ Date is required.", "danger")
+            return redirect(request.url)
 
-    return render_template(
-        "teacher/attendance_panel.html",
-        course=course,
-        students=students,
-        session_name=session_name
+        from datetime import datetime
+        attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+        for student in students:
+            status = request.form.get(f"status_{student.id}", "Absent")
+            existing = Attendance.query.filter_by(
+                student_id=student.id,
+                course_id=course.id,
+                date=attendance_date
+            ).first()
+
+            if existing:
+                continue  # Prevent duplicate
+
+            attendance = Attendance(
+                student_id=student.id,
+                course_id=course.id,
+                date=attendance_date,
+                status=status
+            )
+            db.session.add(attendance)
+
+        db.session.commit()
+        flash("✅ Attendance saved successfully.", "success")
+        return redirect(url_for("teacher_routes.attendance_panel", course_id=course.id))
+
+    return render_template("teacher/attendance_panel.html", course=course, students=students)
+
+# 🔹 Attendance Summary (Placeholder)
+@teacher_routes.route("/teacher/attendance/summary/<int:course_id>")
+def attendance_summary(course_id):
+    course = Course.query.get_or_404(course_id)
+    return render_template("teacher/attendance_summary.html", course=course)
+
+
+
+
+@teacher_routes.route("/teacher/attendance/export/<int:course_id>")
+def export_attendance(course_id):
+    course = Course.query.get_or_404(course_id)
+    attendances = Attendance.query.filter_by(course_id=course.id).order_by(Attendance.date).all()
+
+    si = StringIO()
+    writer = csv.writer(si)
+    writer.writerow(["Date", "Student Name", "Roll", "Status"])
+
+    for a in attendances:
+        writer.writerow([
+            a.date.strftime("%Y-%m-%d"),
+            a.student.name,
+            a.student.roll,
+            a.status
+        ])
+
+    output = si.getvalue()
+    si.close()
+
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment;filename=attendance_{course.name}_{course.session}.csv"}
     )
 
-@teacher_routes.route("/attendance-selector", methods=["GET", "POST"])
-def attendance_selector():
-    teacher_id = session.get("teacher_id")
-    courses = Course.query.filter_by(teacher_id=teacher_id).all()
-    sessions = Session.query.all()  # ✅ Always available
 
-    if request.method == "POST":
-        course_id = request.form.get("course_id")
-        session_name = request.form.get("session_name")
-        return redirect(url_for("teacher_routes.attendance_panel", course_id=course_id, session_name=session_name))
+@teacher_routes.route("/teacher/attendance/dashboard/<int:course_id>")
+def attendance_dashboard(course_id):
+    course = Course.query.get_or_404(course_id)
+    students = course.students
+    total_days = db.session.query(Attendance.date).filter_by(course_id=course.id).distinct().count()
 
-    # ✅ Always render template with sessions
-    return render_template("teacher/attendance_selector.html", courses=courses, sessions=sessions)
+    stats = []
+    frequent_absentees = []
 
+    for student in students:
+        total_attendance = Attendance.query.filter_by(course_id=course.id, student_id=student.id).count()
+        present_count = Attendance.query.filter_by(course_id=course.id, student_id=student.id, status="Present").count()
+        percent = round((present_count / total_days) * 100, 2) if total_days else 0
 
+        student_stat = {
+            "name": student.name,
+            "roll": student.roll,
+            "present": present_count,
+            "total": total_attendance,
+            "percent": percent
+        }
 
+        stats.append(student_stat)
+        if percent < 75:
+            frequent_absentees.append(student_stat)
 
-# ✅ Request OTP
-@teacher_routes.route("/teacher/request-otp", methods=["GET", "POST"])
-def request_otp():
-    if request.method == "POST":
-        email = request.form.get("email")
-        teacher = Teacher.query.filter_by(email=email).first()
-
-        if not teacher:
-            flash("❌ Email not found. Contact admin.", "danger")
-            return redirect(url_for("public_routes.request_otp"))
-
-        otp = str(random.randint(100000, 999999))
-        session["otp_email"] = email
-        session["otp_code"] = otp
-        session["otp_expiry"] = time.time() + 300
-
-        try:
-            msg = Message(
-                subject="🔐 Your OTP for Teacher Registration",
-                sender=current_app.config["MAIL_USERNAME"],
-                recipients=[email],
-                body=f"""Dear {teacher.name},
-
-Your OTP is: {otp}
-
-This code will expire in 5 minutes.
-
-Regards,
-Academic Gateway"""
-            )
-            current_app.extensions["mail"].send(msg)
-            flash("📩 OTP sent to your email.", "info")
-        except Exception as e:
-            print("❌ Email send error:", e)
-            flash("⚠️ Failed to send email. Try again or contact admin.", "danger")
-
-        return redirect(url_for("public_routes.verify_otp"))
-
-    return render_template("public/request_otp.html")
-
-# ✅ Verify OTP & Set Password
-@teacher_routes.route("/teacher/verify-otp", methods=["GET", "POST"])
-def verify_otp():
-    if request.method == "POST":
-        entered_otp = request.form.get("otp")
-        password = request.form.get("password")
-        confirm = request.form.get("confirm")
-
-        if password != confirm:
-            flash("❌ Passwords do not match.", "danger")
-            return redirect(url_for("public_routes.verify_otp"))
-
-        if time.time() > session.get("otp_expiry", 0):
-            session.pop("otp_code", None)
-            session.pop("otp_expiry", None)
-            flash("⏰ OTP expired. Please request a new one.", "warning")
-            return redirect(url_for("public_routes.request_otp"))
-
-        if entered_otp != session.get("otp_code"):
-            flash("❌ Invalid OTP.", "danger")
-            return redirect(url_for("public_routes.verify_otp"))
-
-        email = session.get("otp_email")
-        teacher = Teacher.query.filter_by(email=email).first()
-        if not teacher:
-            flash("❌ Teacher not found.", "danger")
-            return redirect(url_for("public_routes.request_otp"))
-
-        teacher.set_password(password)
-        db.session.commit()
-
-        session.pop("otp_email", None)
-        session.pop("otp_code", None)
-        session.pop("otp_expiry", None)
-
-        flash("✅ Password set successfully. You can now login.", "success")
-        return redirect(url_for("public_routes.teacher_login"))
-
-    return render_template("public/verify_otp.html")
+    return render_template("teacher/attendance_dashboard.html", course=course, stats=stats, total_days=total_days, frequent_absentees=frequent_absentees)

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Attendance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">📊 Attendance Dashboard — {{ course.name }} ({{ course.session }})</h3>
+    <p>Total Attendance Days: <strong>{{ total_days }}</strong></p>
+
+    {% if frequent_absentees %}
+    <div class="alert alert-danger">
+        ⚠️ <strong>Frequent Absentees Detected:</strong>
+        <ul class="mb-0">
+            {% for s in frequent_absentees %}
+            <li>{{ s.name }} ({{ s.roll }}) — {{ s.percent }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="thead-light">
+            <tr>
+                <th>Roll</th>
+                <th>Name</th>
+                <th>Present</th>
+                <th>Total</th>
+                <th>% Present</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in stats %}
+            <tr {% if s.percent < 75 %} class="table-danger" {% endif %}>
+                <td>{{ s.roll }}</td>
+                <td>{{ s.name }}</td>
+                <td>{{ s.present }}</td>
+                <td>{{ s.total }}</td>
+                <td>{{ s.percent }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -84,24 +84,27 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.calendar_list') }}">📅 Calendar</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('public_routes.generate') }}">📄 Documents</a></li>
 
-        <!-- ✅ Teacher Panel Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button" data-bs-toggle="dropdown">
-            👩‍🏫 Teacher Panel
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="teacherDropdown">
-            {% if not session.get("teacher_id") %}
-              <li><a class="dropdown-item" href="{{ url_for('public_routes.teacher_login') }}">🔐 Login</a></li>
-            {% else %}
-              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.upload_material') }}">📤 Upload Materials</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.view_materials', course_id=1) }}">📁 Course Materials</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.my_courses') }}">📘 My Courses</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('teacher_routes.attendance_selector') }}">🕒 Attendance</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="{{ url_for('auth_routes.logout') }}">🚪 Logout</a></li>
-            {% endif %}
-          </ul>
-        </li>
+<!-- ✅ Teacher Panel Dropdown -->
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    👩‍🏫 Teacher Panel
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="teacherDropdown">
+    {% if not session.get("teacher_id") %}
+      <li><a class="dropdown-item" href="{{ url_for('public_routes.teacher_login') }}">🔐 Login</a></li>
+    {% else %}
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.upload_material') }}">📤 Upload Materials</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.view_materials', course_id=1) }}">📁 Course Materials</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.my_courses') }}">📘 My Courses</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.attendance_select') }}">🕒 Attendance</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.attendance_dashboard', course_id=1) }}">📊 Attendance Dashboard</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.attendance_summary', course_id=1) }}">📄 Attendance Summary</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('teacher_routes.export_attendance', course_id=1) }}">⬇️ Export Attendance</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item text-danger" href="{{ url_for('auth_routes.logout') }}">🚪 Logout</a></li>
+    {% endif %}
+  </ul>
+</li>
 
         <!-- ✅ Student Panel Dropdown -->
         <li class="nav-item dropdown">

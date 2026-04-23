@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
-from datetime import datetime
+from datetime import datetime, date
 from werkzeug.security import generate_password_hash, check_password_hash
 import itsdangerous
 
@@ -120,6 +120,7 @@ class Teacher(db.Model):
     joining_date = db.Column(db.Date)
 
     courses = db.relationship("Course", backref="teacher", lazy=True)
+    materials = db.relationship("CourseMaterial", backref="uploader", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -134,12 +135,12 @@ class Teacher(db.Model):
 # ✅ Course Model
 # ─────────────────────────────────────────────────────────────
 class Course(db.Model):
-    """📚 Course model — linked to teacher, holds materials and attendance"""
     __tablename__ = "course"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(20), nullable=False)
+    session = db.Column(db.String(20), nullable=True)
 
     teacher_id = db.Column(
         db.Integer,
@@ -147,10 +148,8 @@ class Course(db.Model):
         nullable=True
     )
 
-    session = db.Column(db.String(20), nullable=True)
-
-    attendances = db.relationship("Attendance", backref="course", lazy=True)
-    materials = db.relationship("CourseMaterial", backref="course", lazy=True)
+    materials = db.relationship("CourseMaterial", back_populates="course", lazy=True)
+    attendances = db.relationship("Attendance", back_populates="course", lazy=True)
 
     _table_args_ = (
         db.UniqueConstraint('code', 'session', name='unique_code_per_session'),
@@ -158,6 +157,25 @@ class Course(db.Model):
 
     def __repr__(self):
         return f"<Course {self.code} - {self.name} ({self.session})>"
+
+# ─────────────────────────────────────────────────────────────
+# ✅ Attendance Model
+# ─────────────────────────────────────────────────────────────
+class Attendance(db.Model):
+    __tablename__ = "attendance"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, default=date.today)
+    status = db.Column(db.String(10), nullable=False)
+
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
+
+    student = db.relationship("Student", backref="attendances", lazy=True)
+    course = db.relationship("Course", back_populates="attendances", lazy=True)
+
+    def __repr__(self):
+        return f"<Attendance {self.date} - Student {self.student_id} - {self.status}>"
 
 # ─────────────────────────────────────────────────────────────
 # ✅ CourseMaterial Model
@@ -173,32 +191,8 @@ class CourseMaterial(db.Model):
     session = db.Column(db.String(20), nullable=True)
     uploaded_by = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
 
+    course = db.relationship("Course", back_populates="materials", lazy=True)
+
     def __repr__(self):
         return f"<Material {self.title} for Course {self.course_id}>"
 
-
-
-
-# ─────────────────────────────────────────────────────────────
-# ✅ Attendance Model
-# ─────────────────────────────────────────────────────────────
-class Attendance(db.Model):
-    """📅 Attendance model — tracks student presence per course/date"""
-    __tablename__ = "attendance"
-
-    id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(
-        db.Integer,
-        db.ForeignKey("student.id", name="fk_attendance_student_id"),
-        nullable=False
-    )
-    course_id = db.Column(
-        db.Integer,
-        db.ForeignKey("course.id", name="fk_attendance_course_id"),
-        nullable=False
-    )
-    date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(10), nullable=False)  # Present / Absent / Late
-
-    def __repr__(self):
-        return f"<Attendance Student:{self.student_id} Course:{self.course_id} Date:{self.date} status:{self.status}>"

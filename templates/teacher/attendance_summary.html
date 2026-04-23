@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Attendance Summary{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">📊 Attendance Summary — {{ course.name }} ({{ course.session }})</h3>
+
+    <form method="GET" class="mb-3">
+        <label for="filter_date">Filter by Date:</label>
+        <input type="date" id="filter_date" name="date" class="form-control" onchange="this.form.submit()">
+    </form>
+
+    <a href="{{ url_for('teacher_routes.export_attendance', course_id=course.id) }}" class="btn btn-success mb-3">
+        ⬇️ Export CSV
+    </a>
+
+    {% if course.attendances %}
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Roll</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in course.attendances %}
+                {% if not request.args.get('date') or attendance.date|string == request.args.get('date') %}
+                <tr>
+                    <td>{{ attendance.date.strftime("%Y-%m-%d") }}</td>
+                    <td>{{ attendance.student.name }}</td>
+                    <td>{{ attendance.student.roll }}</td>
+                    <td>{{ attendance.status }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="alert alert-info">ℹ️ No attendance records found for this course.</div>
+    {% endif %}
+</div>
+{% endblock %}

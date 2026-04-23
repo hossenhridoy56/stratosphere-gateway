@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_file, jsonify
 from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import datetime
@@ -6,6 +6,11 @@ from io import BytesIO
 import os
 
 from xhtml2pdf import pisa
+
+
+from routes.auth_routes import admin_required  # ✅ Protect with session
+
+admin_routes = Blueprint("admin_routes", __name__)
 
 from models import db, CalendarUpload, Notice, Student, Teacher, Course
 from routes.auth_routes import admin_required
@@ -37,20 +42,27 @@ def add_student():
     if request.method == "POST":
         # 🔹 Manual Entry
         if request.form.get("roll"):
-            department = str(request.form.get("department", "")).strip() or "—"
             session_name = request.form.get("session", "").strip()
+            department = request.form.get("department", "").strip() or "—"
+
             student = Student(
-                roll=str(request.form.get("roll", "")).strip(),
-                name=str(request.form.get("name", "")).strip(),
+                roll=request.form.get("roll", "").strip(),
+                name=request.form.get("name", "").strip(),
                 session=session_name,
                 department=department,
-                email=str(request.form.get("email", "")).strip(),
-                mobile=str(request.form.get("mobile", "")).strip(),
-                father_name=str(request.form.get("father_name", "")).strip(),
-                mother_name=str(request.form.get("mother_name", "")).strip(),
-                pass_year=str(request.form.get("pass_year", "")).strip(),
-                cgpa=str(request.form.get("cgpa", "")).strip()
+                email=request.form.get("email", "").strip(),
+                mobile=request.form.get("mobile", "").strip(),
+                father_name=request.form.get("father_name", "").strip(),
+                mother_name=request.form.get("mother_name", "").strip(),
+                pass_year=request.form.get("pass_year", "").strip(),
+                cgpa=request.form.get("cgpa", "").strip()
             )
+
+            # ✅ stitched course binding
+            course = Course.query.filter_by(session=session_name).first()
+            if course:
+                student.courses.append(course)
+
             try:
                 db.session.add(student)
                 db.session.commit()
@@ -58,6 +70,7 @@ def add_student():
             except Exception as e:
                 db.session.rollback()
                 flash(f"❌ Failed to add student: {str(e)}", "danger")
+
             return redirect(url_for("admin_routes.add_student"))
 
         # 🔹 Bulk Upload
@@ -78,6 +91,9 @@ def add_student():
                 success_count = 0
                 duplicate_count = 0
 
+                # ✅ stitched course fetch once
+                course = Course.query.filter_by(session=session_selected).first()
+
                 for _, row in df.iterrows():
                     roll = row.get("roll", "").strip()
                     name = row.get("name", "").strip()
@@ -86,8 +102,7 @@ def add_student():
                     if not roll or not name:
                         continue
 
-                    existing = Student.query.filter_by(roll=roll).first()
-                    if existing:
+                    if Student.query.filter_by(roll=roll).first():
                         duplicate_count += 1
                         continue
 
@@ -103,6 +118,11 @@ def add_student():
                         pass_year=row.get("pass_year", "").strip(),
                         cgpa=row.get("cgpa", "").strip()
                     )
+
+                    # ✅ stitched course binding
+                    if course:
+                        student.courses.append(course)
+
                     db.session.add(student)
                     success_count += 1
 
@@ -575,3 +595,19 @@ def generate():
 
     # ✅ GET request — show form
     return render_template("admin/generate_form.html")
+
+
+
+
+
+
+
+@admin_routes.route("/generate-document", methods=["POST"])
+@admin_required
+def generate_document():
+    template_id = request.form.get("template_id")
+    student_id = request.form.get("student_id")
+
+    # ✅ Simulate document generation
+    print(f"📄 Generating document: {template_id} for student {student_id}")
+    return jsonify({"status": "success", "message": "Document generated"}), 200

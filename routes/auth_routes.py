@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import (
+    Blueprint, render_template, request, redirect,
+    url_for, flash, session
+)
 from functools import wraps
 
 # ✅ Step 1: Blueprint setup
 auth_routes = Blueprint("auth_routes", __name__)
 
-# ✅ Step 2: Fixed admin credentials
+# ✅ Step 2: Fixed admin credentials (use env vars in production)
 ADMIN_USERNAME = "statadmin"
 ADMIN_PASSWORD = "admin1922025"
 
@@ -12,8 +15,8 @@ ADMIN_PASSWORD = "admin1922025"
 @auth_routes.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
 
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session["role"] = "admin"
@@ -21,6 +24,7 @@ def admin_login():
             return redirect(url_for("admin_routes.admin_dashboard"))
         else:
             flash("❌ Invalid credentials.", "danger")
+            return redirect(url_for("auth_routes.admin_login"))
 
     return render_template("auth/admin_login.html")
 
@@ -34,7 +38,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# ✅ Step 5: Logout route (optional but useful)
+# ✅ Step 5: Logout route
 @auth_routes.route("/logout")
 def logout():
     session.clear()

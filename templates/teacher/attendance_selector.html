@@ -1,20 +1,33 @@
 {% extends "base.html" %}
+{% block title %}Select Course for Attendance{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-  <h4 class="mb-3">🕒 Start Attendance</h4>
-  <form method="POST" action="">
-    <div class="mb-3">
-      <label class="form-label">📚 Select Course</label>
-      <select name="course_id" class="form-select" required>
-        <option value="">-- Select a course --</option>
-        {% for course in courses %}
-        <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
-        {% endfor %}
-      </select>
-    </div>
+    <h3 class="mb-3">📋 Select Course for Attendance</h3>
 
-
-    <button type="submit" class="btn btn-primary">➡️ Go to Attendance Panel</button>
-  </form>
+    {% if courses %}
+    <form method="GET" action="{{ url_for('teacher_routes.attendance_panel', course_id=0) }}">
+        <div class="form-group">
+            <label for="course">Choose a course:</label>
+            <select id="course" name="course_id" class="form-control" required onchange="redirectToPanel(this)">
+                <option value="">-- Select --</option>
+                {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.name }} ({{ course.session }})</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+    {% else %}
+        <div class="alert alert-warning">⚠️ No courses assigned to you.</div>
+    {% endif %}
 </div>
+
+<script>
+function redirectToPanel(select) {
+    const courseId = select.value;
+    if (courseId) {
+        window.location.href = "/teacher/attendance/panel/" + courseId;
+    }
+}
+</script>
 {% endblock %}
